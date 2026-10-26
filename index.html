@@ -1,0 +1,1819 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Antipsikotik Reseptör Atlası</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Tipik ve atipik antipsikotiklerin reseptör profillerini 3B olarak keşfedin: ilaçtan reseptöre, reseptörden ilaca gezinin.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Konfokal floresan mikroskop: koyu lam zemini, her reseptör ailesi bir floresan kanal rengi.
+   Yerleşim: liste | 3B reseptör halkası (hücre zarı) | ayrıntı paneli. Tek (koyu) tema bilinçli seçim. */
+:root {
+  --bg: #070a12;
+  --panel: #0c1120;
+  --panel-2: #111a2e;
+  --line: #1c2640;
+  --fg: #e7ecf6;
+  --muted: #8b97b3;
+  --faint: #59647f;
+  --accent: #9be7ff;
+
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Sınıf renkleri (ilaç kapsülleri) */
+  --c-tipik: #e0a458;
+  --c-atipik: #2dd4bf;
+  --c-yeni: #818cf8;
+
+  /* Semantik şiddet */
+  --sev-0: #2a3552;
+  --sev-1: #5eead4;
+  --sev-2: #fbbf24;
+  --sev-3: #fb7185;
+
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; }
+html, body { height: 100%; }
+body {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--f-body);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+#app {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 290px minmax(0, 1fr) 410px;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 12px;
+}
+
+/* ---------- Başlık ---------- */
+.top {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  flex-wrap: wrap;
+}
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand svg { flex: none; }
+.brand h1 {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: clamp(1.25rem, 1.2vw + 0.9rem, 1.7rem);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin: 0;
+  text-wrap: balance;
+}
+.brand h1 em { font-style: normal; color: var(--accent); }
+.brand p { margin: 2px 0 0; color: var(--muted); font-size: 12.5px; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 13px;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: border-color .15s, background .15s;
+}
+.btn:hover { border-color: var(--faint); background: var(--panel-2); }
+.btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+
+/* ---------- Paneller ---------- */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  min-height: 0;
+  min-width: 0;
+}
+.side { display: flex; flex-direction: column; overflow: hidden; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; padding: 6px; gap: 4px; border-bottom: 1px solid var(--line); }
+.tab {
+  border: 0; background: transparent; padding: 8px; border-radius: 9px; cursor: pointer;
+  color: var(--muted); font-weight: 600; font-size: 13px;
+}
+.tab[aria-selected="true"] { background: var(--panel-2); color: var(--fg); }
+.side-tools { padding: 10px 12px; display: grid; gap: 8px; border-bottom: 1px solid var(--line); }
+.search {
+  width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--fg);
+  border-radius: 9px; padding: 8px 10px; font: inherit; font-size: 13px;
+}
+.search::placeholder { color: var(--faint); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  border: 1px solid var(--line); background: transparent; padding: 3px 10px; border-radius: 999px;
+  font-size: 12px; cursor: pointer; color: var(--muted);
+}
+.chip[aria-pressed="true"] { color: var(--fg); border-color: var(--faint); background: var(--panel-2); }
+.list { overflow-y: auto; padding: 6px 6px 12px; flex: 1; min-height: 0; }
+.grp {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: .12em; color: var(--faint);
+  padding: 12px 10px 4px; font-weight: 600;
+}
+.row {
+  display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; align-items: center; gap: 10px;
+  width: 100%; text-align: left; border: 0; background: transparent; padding: 7px 10px;
+  border-radius: 9px; cursor: pointer;
+}
+.row:hover { background: var(--panel-2); }
+.row.active { background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--faint); }
+.row .nm { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .sub { color: var(--faint); font-size: 11.5px; white-space: nowrap; }
+.row .mono { font-family: var(--f-mono); }
+
+.pill-ic {
+  width: 20px; height: 9px; border-radius: 9px; display: block;
+  background: linear-gradient(90deg, var(--fg) 0 50%, var(--c) 50% 100%);
+  transform: rotate(-30deg);
+}
+.helix-ic { display: flex; gap: 1.5px; height: 14px; align-items: center; }
+.helix-ic i { width: 2px; height: 12px; border-radius: 2px; background: var(--c); display: block; }
+.helix-ic i:nth-child(even) { height: 9px; }
+
+/* ---------- Sahne ---------- */
+.stage { position: relative; overflow: hidden; background: var(--bg); }
+.stage canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+@media (pointer: coarse) { .stage canvas { touch-action: pan-y; } }
+.labels { position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; overflow: hidden; }
+.lbl {
+  position: absolute; left: 0; top: 0; white-space: nowrap;
+  font-size: 11px; font-weight: 500; color: var(--fg);
+  text-shadow: 0 0 4px var(--bg), 0 0 8px var(--bg);
+  transition: opacity .25s;
+  will-change: transform;
+}
+.lbl.rec { font-family: var(--f-mono); font-size: 11.5px; font-weight: 600; }
+.lbl.dim { opacity: .28; }
+.lbl.on { opacity: 1; }
+.lbl.sel { opacity: 1; font-size: 13px; font-weight: 700; color: var(--accent); }
+.lbl.fam { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; opacity: .8; }
+.lbl.mystery { font-family: var(--f-display); font-size: 22px; font-weight: 800; color: var(--accent); }
+.stage-ui { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; }
+.icon-btn {
+  border: 1px solid var(--line); background: var(--panel); border-radius: 9px; padding: 6px 10px;
+  font-size: 12px; cursor: pointer; color: var(--muted);
+}
+.icon-btn:hover { color: var(--fg); }
+.icon-btn[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+.legend {
+  position: absolute; left: 10px; bottom: 10px; display: flex; gap: 6px 12px; flex-wrap: wrap;
+  max-width: calc(100% - 20px); padding: 8px 10px; border-radius: 10px;
+  background: color-mix(in srgb, var(--panel) 85%, transparent); border: 1px solid var(--line);
+  font-size: 11.5px; color: var(--muted);
+}
+.legend span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.legend i { width: 16px; height: 3px; border-radius: 2px; background: var(--c); display: block; box-shadow: 0 0 6px var(--c); }
+.hint {
+  position: absolute; left: 10px; top: 10px; font-size: 11.5px; color: var(--faint);
+  max-width: 60%;
+}
+.tip {
+  position: absolute; pointer-events: none; z-index: 5;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px;
+  padding: 7px 10px; font-size: 12px; max-width: 260px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+.tip b { display: block; font-size: 13px; }
+.tip span { color: var(--muted); }
+.nogl {
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: grid; place-items: center; text-align: center; padding: 24px;
+  color: var(--muted); z-index: 2;
+}
+.nogl p { margin: 0 0 12px; max-width: 40ch; }
+.stage.compact .lbl.drug.dim { display: none; }
+
+/* ---------- Ayrıntı ---------- */
+.detail { overflow-y: auto; padding: 18px 18px 28px; }
+.navbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; min-height: 28px; }
+.back {
+  border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 4px 12px;
+  font-size: 12px; cursor: pointer; color: var(--muted);
+}
+.back:hover { color: var(--fg); border-color: var(--faint); }
+.crumbs { font-size: 11.5px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.eyebrow {
+  font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600;
+  display: flex; gap: 6px 10px; flex-wrap: wrap; align-items: center;
+}
+.eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); box-shadow: 0 0 8px var(--c); }
+.detail h2 {
+  font-family: var(--f-display); font-weight: 800; font-size: 2.1rem; letter-spacing: -0.025em;
+  line-height: 1.02; margin: 6px 0 8px; text-wrap: balance;
+}
+.detail h2.mono { font-family: var(--f-mono); font-weight: 600; letter-spacing: -0.01em; }
+.lede { color: var(--fg); margin: 0 0 10px; max-width: 62ch; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.tag {
+  font-size: 11.5px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted);
+  background: var(--bg);
+}
+.tag b { color: var(--fg); font-weight: 600; }
+.sec { margin-top: 22px; }
+.sec h3 {
+  font-family: var(--f-display); font-weight: 700; font-size: 1.05rem; margin: 0 0 4px; letter-spacing: -0.01em;
+}
+.sec .cap { color: var(--faint); font-size: 12px; margin: 0 0 10px; }
+.kv { display: grid; gap: 8px; }
+.kv div { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 10px; }
+.kv dt { color: var(--faint); font-size: 12px; padding-top: 1px; }
+.kv dd { margin: 0; }
+
+.fp { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.fp-row {
+  display: grid; grid-template-columns: 22px 62px minmax(0, 1fr) 54px; align-items: center; gap: 8px;
+  width: 100%; border: 0; background: transparent; text-align: left; padding: 6px 8px; border-radius: 8px;
+  cursor: pointer;
+}
+.fp-row:hover { background: var(--panel-2); }
+.fp-row.static { cursor: default; }
+.fp-row.static:hover { background: transparent; }
+.fp-row .rn { font-family: var(--f-mono); font-weight: 600; font-size: 13px; }
+.fp-row .dn { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fp-row .mode { font-size: 11px; color: var(--c); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fp-row .ki { font-family: var(--f-mono); font-size: 10.5px; color: var(--faint); text-align: right; font-variant-numeric: tabular-nums; }
+.fp-mid { display: grid; gap: 3px; min-width: 0; }
+.bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; height: 7px; }
+.bars i { display: block; border-radius: 2px; background: var(--sev-0); }
+.bars i.on { background: var(--c); box-shadow: 0 0 6px color-mix(in srgb, var(--c) 60%, transparent); }
+.bars.b2 i.on { background: transparent; box-shadow: inset 0 0 0 1.5px var(--c2); }
+.fp-row.cmp { grid-template-columns: 22px 62px minmax(0, 1fr) 54px; }
+.fp-row.drugrow { grid-template-columns: 22px minmax(84px, 128px) minmax(0, 1fr) 46px; }
+.cmp-legend { display: flex; gap: 14px; font-size: 11.5px; color: var(--muted); margin: 0 0 8px; flex-wrap: wrap; }
+.cmp-legend span { display: inline-flex; gap: 6px; align-items: center; }
+.cmp-legend i { width: 14px; height: 7px; border-radius: 2px; display: block; }
+
+.select {
+  background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 9px;
+  padding: 6px 8px; font: inherit; font-size: 12.5px; max-width: 100%;
+}
+.sec-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+.sec-head h3 { margin: 0; }
+
+.fx { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.fx-col h4 {
+  margin: 0 0 6px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600;
+  display: flex; align-items: center; gap: 8px; color: var(--muted);
+}
+.fx-col h4::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--c); }
+.fx-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.fx-col li { display: grid; grid-template-columns: 62px minmax(0, 1fr); gap: 8px; align-items: baseline; font-size: 13px; }
+.rchip {
+  font-family: var(--f-mono); font-size: 11px; font-weight: 600; border: 1px solid var(--line);
+  background: var(--bg); border-radius: 6px; padding: 1px 6px; cursor: pointer; color: var(--c);
+  justify-self: start; white-space: nowrap;
+}
+.rchip:hover { border-color: var(--c); }
+span.rchip { cursor: default; }
+
+.se { display: grid; gap: 7px; }
+.se-row { display: grid; grid-template-columns: 112px minmax(0, 1fr) 56px; gap: 10px; align-items: center; font-size: 12.5px; }
+.se-row .lv { font-size: 11px; color: var(--muted); text-align: right; }
+.meter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+.meter i { height: 8px; border-radius: 2px; background: var(--sev-0); display: block; }
+.meter.l1 i:nth-child(-n+1) { background: var(--sev-1); }
+.meter.l2 i:nth-child(-n+2) { background: var(--sev-2); }
+.meter.l3 i:nth-child(-n+3) { background: var(--sev-3); }
+.meter.ghost i { height: 4px; }
+.meter.ghost.l1 i:nth-child(-n+1), .meter.ghost.l2 i:nth-child(-n+2), .meter.ghost.l3 i:nth-child(-n+3) {
+  background: transparent; box-shadow: inset 0 0 0 1px var(--muted);
+}
+.se-stack { display: grid; gap: 3px; }
+
+.pearls { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.pearls li::marker { color: var(--accent); }
+
+.mode-block { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: grid; gap: 10px; background: var(--bg); }
+.mode-block + .mode-block { margin-top: 10px; }
+.mode-block h4 { margin: 0; font-size: 13px; display: flex; gap: 8px; align-items: center; }
+.mode-block h4 i { width: 14px; height: 3px; border-radius: 2px; background: var(--c); display: block; }
+.mode-block ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 13px; }
+.mode-block .lab { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); font-weight: 600; margin-bottom: 2px; }
+.mode-block .etki li::marker { color: var(--sev-1); }
+.mode-block .yan li::marker { color: var(--sev-3); }
+
+.stat { display: flex; align-items: baseline; gap: 8px; margin: 2px 0 10px; color: var(--muted); font-size: 12.5px; }
+.stat b { font-family: var(--f-display); font-size: 1.6rem; color: var(--fg); font-weight: 800; font-variant-numeric: tabular-nums; }
+
+/* ---------- Oyun ---------- */
+.score { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 4px; }
+.score .tag b { font-variant-numeric: tabular-nums; }
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.opt {
+  border: 1px solid var(--line); background: var(--bg); border-radius: 12px; padding: 12px; cursor: pointer;
+  font-family: var(--f-display); font-weight: 700; font-size: 15px; text-align: left;
+  display: flex; align-items: center; gap: 10px;
+}
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt:disabled { cursor: default; }
+.opt.right { border-color: var(--sev-1); background: color-mix(in srgb, var(--sev-1) 14%, var(--bg)); }
+.opt.wrong { border-color: var(--sev-3); background: color-mix(in srgb, var(--sev-3) 14%, var(--bg)); }
+.feedback { margin-top: 14px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel-2); }
+.feedback strong { font-family: var(--f-display); font-size: 1.1rem; }
+.row-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* ---------- Kavramlar penceresi ---------- */
+.modal {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-bottom, 0px));
+}
+.modal-card {
+  width: min(760px, 100%); max-height: 100%; overflow-y: auto; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px 26px;
+}
+.modal-card h2 { font-family: var(--f-display); font-weight: 800; font-size: 1.7rem; margin: 0 0 4px; letter-spacing: -0.02em; }
+.modal-card h3 { font-family: var(--f-display); font-weight: 700; font-size: 1.05rem; margin: 20px 0 6px; }
+.modal-card p, .modal-card li { max-width: 68ch; }
+.modal-card ul { padding-left: 18px; margin: 0; display: grid; gap: 4px; }
+.occ { display: grid; gap: 4px; margin-top: 8px; }
+.occ-bar { position: relative; height: 26px; border-radius: 8px; background: linear-gradient(90deg, var(--sev-0) 0 60%, var(--sev-1) 60% 72%, var(--sev-2) 72% 78%, var(--sev-3) 78% 100%); }
+.occ-scale { display: flex; justify-content: space-between; font-family: var(--f-mono); font-size: 10.5px; color: var(--faint); }
+.occ-keys { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px 14px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+.occ-keys span { display: flex; gap: 6px; align-items: center; }
+.occ-keys i { width: 10px; height: 10px; border-radius: 2px; background: var(--c); display: block; flex: none; }
+.close { float: right; }
+.small { font-size: 12px; color: var(--faint); }
+
+/* ---------- Duyarlı yerleşim ---------- */
+@media (max-width: 1180px) {
+  #app { grid-template-columns: 250px minmax(0, 1fr) 360px; }
+}
+@media (max-width: 980px) {
+  html, body { height: auto; }
+  #app {
+    height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+  }
+  .stage { height: 62vh; height: min(62vh, 115vw); min-height: 340px; order: 1; }
+  .detail { order: 2; overflow: visible; }
+  .side { order: 3; max-height: 520px; }
+  .top { order: 0; }
+  .hint { display: none; }
+}
+@media (max-width: 480px) {
+  .opts { grid-template-columns: 1fr; }
+  .detail h2 { font-size: 1.8rem; }
+  .se-row { grid-template-columns: 96px minmax(0, 1fr) 48px; }
+  .legend { font-size: 10.5px; gap: 4px 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div class="brand">
+      <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+        <rect x="0.5" y="0.5" width="39" height="39" rx="11" fill="none" stroke="#1c2640"/>
+        <g stroke-linecap="round" stroke-width="2.4">
+          <line x1="9" y1="11" x2="9" y2="29" stroke="#ff5c8a"/>
+          <line x1="13.5" y1="14" x2="13.5" y2="26" stroke="#ff5c8a"/>
+          <line x1="18" y1="10" x2="18" y2="30" stroke="#38bdf8"/>
+          <line x1="22.5" y1="14" x2="22.5" y2="26" stroke="#38bdf8"/>
+          <line x1="27" y1="11" x2="27" y2="29" stroke="#facc15"/>
+          <line x1="31.5" y1="14" x2="31.5" y2="26" stroke="#4ade80"/>
+        </g>
+      </svg>
+      <div>
+        <h1>Antipsikotik <em>Reseptör</em> Atlası</h1>
+        <p id="subtitle">Tipik ve atipik antipsikotiklerin bağlanma profilleri</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="quizBtn" type="button">Parmak İzi Oyunu</button>
+      <button class="btn" id="infoBtn" type="button">Kavramlar ve kaynaklar</button>
+    </div>
+  </header>
+
+  <aside class="panel side" aria-label="İlaç ve reseptör listesi">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tabDrug" aria-selected="true" type="button">İlaçlar</button>
+      <button class="tab" role="tab" id="tabRec" aria-selected="false" type="button">Reseptörler</button>
+    </div>
+    <div class="side-tools">
+      <input class="search" id="search" type="search" placeholder="Ara: klozapin, D2, H1…" autocomplete="off">
+      <div class="chips" id="filters"></div>
+    </div>
+    <div class="list" id="list"></div>
+  </aside>
+
+  <main class="panel stage" id="stage" aria-label="3B reseptör haritası">
+    <div class="labels" id="labels"></div>
+    <div class="hint" id="hint">Sürükle: döndür · Tekerlek/kıstır: yakınlaş · Kapsüle veya reseptöre tıkla</div>
+    <div class="stage-ui">
+      <button class="icon-btn" id="zoomIn" type="button" aria-label="Yakınlaştır">+</button>
+      <button class="icon-btn" id="zoomOut" type="button" aria-label="Uzaklaştır">−</button>
+      <button class="icon-btn" id="rotBtn" type="button" aria-pressed="true">Otomatik dönüş</button>
+      <button class="icon-btn" id="resetBtn" type="button">Görünümü sıfırla</button>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="tip" id="tip" hidden></div>
+    <div class="nogl" id="glMsg"><div><p>3B sahne yükleniyor…</p></div></div>
+  </main>
+
+  <section class="panel detail" id="detail" aria-live="polite"></section>
+</div>
+
+<div class="modal" id="info" hidden role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+  <div class="modal-card">
+    <button class="btn close" id="infoClose" type="button">Kapat</button>
+    <h2 id="infoTitle">Kavramlar</h2>
+    <p class="small">Atlası okurken bilmeniz gerekenler</p>
+
+    <h3>Tipik ve atipik</h3>
+    <p><b>Tipik (1. kuşak)</b> antipsikotiklerin ortak özelliği güçlü D2 antagonizmidir. Yüksek potensli olanlar (haloperidol, flufenazin) daha çok EPS ve hiperprolaktinemi, düşük potensli olanlar (klorpromazin, tioridazin) daha çok sedasyon, ortostaz ve antikolinerjik etki yapar. <b>Atipik (2. kuşak)</b> ilaçlar terapötik dozda daha az EPS yapar; bunu açıklayan birkaç model vardır.</p>
+
+    <h3>Atipikliği açıklayan modeller</h3>
+    <ul>
+      <li><b>Serotonin-dopamin antagonizmi</b> (Meltzer, 1989): 5-HT2A afinitesinin D2'den yüksek olması nigrostriatal dopamin salınımını korur.</li>
+      <li><b>Hızlı ayrışma</b> (Kapur ve Seeman, 2001): D2'den hızla ayrılan ilaçlar (ketiapin, klozapin) fizyolojik dopamin sinyaline izin verir.</li>
+      <li><b>D2/D3 kısmi agonizm</b>: aripiprazol, brekspiprazol ve kariprazin dopamin tonusunu ne tam kapatır ne tam açar.</li>
+      <li><b>D2 dışı mekanizma</b>: ksanomelin-trospiyum, M1/M4 muskarinik agonizmiyle D2'ye bağlanmadan etki eder.</li>
+    </ul>
+
+    <h3>Striatal D2 doluluk penceresi</h3>
+    <p>PET çalışmalarına göre (Kapur ve ark., 2000) yanıt için yaklaşık %65 doluluk yeterlidir; doluluk arttıkça yan etkiler belirir.</p>
+    <div class="occ" aria-label="D2 doluluk ölçeği">
+      <div class="occ-bar"></div>
+      <div class="occ-scale"><span>%0</span><span>%60</span><span>%72</span><span>%78</span><span>%100</span></div>
+      <div class="occ-keys">
+        <span style="--c: var(--sev-1)"><i></i>%60–65: antipsikotik yanıt</span>
+        <span style="--c: var(--sev-2)"><i></i>&gt;%72: hiperprolaktinemi</span>
+        <span style="--c: var(--sev-3)"><i></i>&gt;%78: EPS</span>
+      </div>
+    </div>
+
+    <h3>Dört dopamin yolağı</h3>
+    <ul>
+      <li><b>Mezolimbik</b> (VTA → nucleus accumbens): fazla aktivite pozitif belirtiler. Blokaj = terapötik etki.</li>
+      <li><b>Mezokortikal</b> (VTA → prefrontal korteks): az aktivite negatif ve bilişsel belirtiler. Blokaj tabloyu kötüleştirebilir.</li>
+      <li><b>Nigrostriatal</b> (substantia nigra → striatum): motor kontrol. Blokaj = EPS, tardif diskinezi.</li>
+      <li><b>Tuberoinfundibular</b> (hipotalamus → hipofiz): prolaktini baskılar. Blokaj = hiperprolaktinemi.</li>
+    </ul>
+
+    <h3>Haritadaki semboller</h3>
+    <ul>
+      <li><b>7 sarmallı demet</b>: G proteinine kenetli reseptör (GPCR, 7 transmembran sarmal).</li>
+      <li><b>12 sarmallı halka</b>: monoamin taşıyıcısı (SERT, NET).</li>
+      <li><b>4 alt birimli blok</b>: hERG potasyum kanalı (tetramer).</li>
+      <li><b>İki renkli kapsül</b>: ilaç. Altın = tipik, turkuaz = atipik, çivit = yeni mekanizma.</li>
+      <li><b>Işın kalınlığı</b> afiniteyi, <b>rengi</b> etki biçimini gösterir. Akan parçacıklar ligandın reseptöre gidişini temsil eder.</li>
+    </ul>
+
+    <h3>Afinite ölçeği</h3>
+    <p>Dört kademe, yaklaşık bağlanma sabitine (K<sub>i</sub>) karşılık gelir: <b>çok güçlü</b> &lt;1 nM, <b>güçlü</b> 1–10 nM, <b>orta</b> 10–100 nM, <b>zayıf</b> 100–1000 nM. 1000 nM üzeri gösterilmez. Klinik önemi tek başına K<sub>i</sub> değil, terapötik dozda D2'ye göre göreli doluluk belirler.</p>
+
+    <h3>Uyarı ve kaynaklar</h3>
+    <p class="small">Bu sayfa eğitim amaçlıdır; tedavi kararı için kullanılmamalıdır. Afinite kademeleri ve klinik yan etki puanları yarı-niceldir; çalışmalar arasında K<sub>i</sub> değerleri bir büyüklük mertebesine kadar farklılık gösterebilir. Derlendiği kaynaklar: NIMH PDSP K<sub>i</sub> veritabanı; Stahl's Essential Psychopharmacology; The Maudsley Prescribing Guidelines in Psychiatry; Kapur ve ark. (2000) Am J Psychiatry; Meltzer ve ark. (1989) J Pharmacol Exp Ther; ürün bilgileri. Doz aralıkları erişkin şizofreni için tipik aralıklardır ve ülkeye göre değişir.</p>
+  </div>
+</div>
+
+<script>
+(function () {
+"use strict";
+
+/* =====================================================================
+   VERİ
+   ===================================================================== */
+
+const FAM = {
+  dop: { ad: "Dopamin", c: "#ff5c8a" },
+  ser: { ad: "Serotonin", c: "#38bdf8" },
+  his: { ad: "Histamin", c: "#facc15" },
+  mus: { ad: "Muskarinik", c: "#4ade80" },
+  adr: { ad: "Adrenerjik", c: "#fb923c" },
+  tra: { ad: "Taşıyıcı", c: "#c084fc" },
+  kan: { ad: "İyon kanalı", c: "#e2e8f0" }
+};
+
+const ACT = {
+  a: { ad: "Antagonist", c: "#fb7185" },
+  p: { ad: "Kısmi agonist", c: "#fbbf24" },
+  g: { ad: "Agonist", c: "#86efac" },
+  i: { ad: "Ters agonist", c: "#c4b5fd" },
+  b: { ad: "Blok / geri alım inhibisyonu", c: "#cbd5e1" }
+};
+const ACT_SHORT = { a: "Antagonist", p: "Kısmi agonist", g: "Agonist", i: "Ters agonist", b: "İnhibitör" };
+
+const CLS = {
+  tipik: { ad: "Tipik", uzun: "Tipik (1. kuşak)", c: "#e0a458" },
+  atipik: { ad: "Atipik", uzun: "Atipik (2. ve 3. kuşak)", c: "#2dd4bf" },
+  yeni: { ad: "Yeni mekanizma", uzun: "Yeni mekanizma (D2 dışı)", c: "#818cf8" }
+};
+
+const LV = ["Yok", "Zayıf", "Orta", "Güçlü", "Çok güçlü"];
+const KI = ["", "100–1000", "10–100", "1–10", "< 1"];
+const SE_KEYS = [
+  ["eps", "EPS / akatizi"],
+  ["prl", "Prolaktin artışı"],
+  ["kilo", "Kilo / metabolik"],
+  ["sed", "Sedasyon"],
+  ["orto", "Ortostatik hipotansiyon"],
+  ["ach", "Antikolinerjik"],
+  ["qtc", "QTc uzaması"]
+];
+const SE_LV = ["Yok", "Düşük", "Orta", "Yüksek"];
+
+const REC = [
+  { id: "D1", ad: "D1", fam: "dop", tip: "gpcr", sinyal: "Gs → cAMP ↑",
+    konum: "Prefrontal korteks, striatum (direkt yol orta dikenli nöronları)",
+    rol: "Çalışma belleği, bilişsel esneklik, hareketin başlatılması.",
+    blok: { etki: ["Antipsikotik katkısı sınırlı; klozapin ve tiyoksantenlerin profilinin parçası"],
+            yan: ["Prefrontal işlevde yavaşlama ve apatiye katkı"] } },
+  { id: "D2", ad: "D2", fam: "dop", tip: "gpcr", sinyal: "Gi/o → cAMP ↓",
+    konum: "Mezolimbik, mezokortikal, nigrostriatal ve tuberoinfundibular yolaklar; hipofiz laktotrofları; kemoreseptör tetik bölge",
+    rol: "Ödül ve motivasyon, motor kontrol, prolaktin salınımının baskılanması. Bütün ruhsatlı antipsikotiklerin (ksanomelin hariç) ortak hedefi.",
+    blok: { etki: ["Mezolimbik: pozitif belirtilerde (sanrı, varsanı) azalma", "Antimanik etki", "Kemoreseptör tetik bölge: antiemetik etki", "Tik ve Tourette belirtilerinde azalma"],
+            yan: ["Nigrostriatal: EPS (akut distoni, parkinsonizm, akatizi)", "Uzun dönemde tardif diskinezi", "Tuberoinfundibular: hiperprolaktinemi (galaktore, amenore, cinsel işlev bozukluğu, kemik kaybı)", "Mezokortikal: ikincil negatif ve bilişsel belirtiler, disfori", "Nöroleptik malign sendrom (nadir, ölümcül olabilir)"] },
+    kismi: { etki: ["Fazla dopaminli bölgede antagonist gibi: pozitif belirtilerde azalma", "Az dopaminli bölgede tonus sağlar: düşük EPS riski", "Prolaktini normalleştirir, hatta düşürür"],
+             yan: ["Akatizi ve huzursuzluk", "Bulantı, uykusuzluk", "Dürtü kontrol sorunları (kumar, alışveriş, tıkınırcasına yeme)"] } },
+  { id: "D3", ad: "D3", fam: "dop", tip: "gpcr", sinyal: "Gi/o → cAMP ↓",
+    konum: "Limbik bölgeler (nucleus accumbens kabuğu, Calleja adacıkları), VTA'da otoreseptör",
+    rol: "Motivasyon, ödül, duygudurum ve biliş.",
+    blok: { etki: ["Negatif belirtiler, motivasyon ve duygudurum üzerinde olası olumlu etki"],
+            yan: ["Belirli bir yan etkiyle net ilişkilendirilmemiş"] },
+    kismi: { etki: ["Negatif belirtiler ve bilişte iyileşme potansiyeli (kariprazin)", "Antidepresan ve antimanik katkı"],
+             yan: ["Akatizi ile ilişkilendirilir", "Bulantı"] } },
+  { id: "D4", ad: "D4", fam: "dop", tip: "gpcr", sinyal: "Gi/o → cAMP ↓",
+    konum: "Prefrontal korteks, hipokampus, retina",
+    rol: "Dikkat ve bilişsel işlev. Klozapinin yüksek D4/D2 oranı bir dönem atipikliğin anahtarı sanıldı; seçici D4 antagonistleri şizofrenide etkisiz çıktı.",
+    blok: { etki: ["Tek başına antipsikotik etkisi gösterilemedi; klozapin profilinin parçası"],
+            yan: ["Klinik olarak belirgin yan etki tanımlanmamış"] } },
+  { id: "5HT1A", ad: "5-HT1A", fam: "ser", tip: "gpcr", sinyal: "Gi/o → cAMP ↓",
+    konum: "Rafe çekirdekleri (somatodendritik otoreseptör), hipokampus, prefrontal korteks",
+    rol: "Anksiyete ve duygudurum; prefrontal dopamin salınımının düzenlenmesi.",
+    blok: { etki: ["Belirgin klinik katkı beklenmez"], yan: ["Belirgin yan etki beklenmez"] },
+    kismi: { etki: ["Prefrontal dopamin salınımı artar: negatif ve bilişsel belirtilere katkı", "Anksiyolitik ve antidepresan etki", "EPS riskini azaltır"],
+             yan: ["Baş dönmesi, bulantı"] } },
+  { id: "5HT2A", ad: "5-HT2A", fam: "ser", tip: "gpcr", sinyal: "Gq → IP3/DAG",
+    konum: "Kortikal piramidal nöronlar (V. tabaka), striatum, trombositler",
+    rol: "Algı ve bilinç (psikedeliklerin hedefi), nigrostriatal dopamin salınımını frenleme, uyku mimarisi.",
+    blok: { etki: ["Nigrostriatal dopamin salınımını serbestleştirir: EPS riski azalır", "Hipofizde prolaktin artışını sınırlar", "Varsanılarda azalma (pimavanserin, Parkinson psikozu)", "Yavaş dalga uykusunda artış"],
+            yan: ["Sedasyon ve ortostaza hafif katkı", "Kilo artışına dolaylı katkı olabilir"] } },
+  { id: "5HT2C", ad: "5-HT2C", fam: "ser", tip: "gpcr", sinyal: "Gq → IP3/DAG",
+    konum: "Hipotalamus (POMC nöronları), koroid pleksus, VTA GABA internöronları, limbik sistem",
+    rol: "İştah ve tokluk, mezokortikal dopamin ve noradrenalin salınımını frenleme.",
+    blok: { etki: ["Prefrontal dopamin ve noradrenalin salınımı artar: antidepresan ve prosognitif potansiyel"],
+            yan: ["İştah artışı ve kilo alımı (H1 blokajıyla sinerjik)", "İnsülin direnci, glukoz düzensizliği"] },
+    kismi: { etki: ["Dopamin salınımını dengeleyici etki"], yan: ["Kilo artışı riski görece düşük"] } },
+  { id: "5HT6", ad: "5-HT6", fam: "ser", tip: "gpcr", sinyal: "Gs → cAMP ↑",
+    konum: "Striatum, hipokampus, korteks (neredeyse yalnızca beyinde)",
+    rol: "Kolinerjik ve glutamaterjik iletimin düzenlenmesi, bellek, iştah.",
+    blok: { etki: ["Asetilkolin ve glutamat salınımı artar: prosognitif potansiyel"],
+            yan: ["İştah ve kilo üzerinde olası katkı (tartışmalı)"] } },
+  { id: "5HT7", ad: "5-HT7", fam: "ser", tip: "gpcr", sinyal: "Gs → cAMP ↑",
+    konum: "Talamus, hipotalamus (suprakiazmatik çekirdek), hipokampus",
+    rol: "Sirkadiyen ritim, uyku, duygudurum, termoregülasyon.",
+    blok: { etki: ["Antidepresan etki (lurasidon, amisülprid)", "Sirkadiyen ritim ve uykunun düzenlenmesi", "Prosognitif potansiyel"],
+            yan: ["Klinik olarak belirgin yan etki tanımlanmamış"] } },
+  { id: "H1", ad: "H1", fam: "his", tip: "gpcr", sinyal: "Gq → IP3/DAG",
+    konum: "Tuberomamiller çekirdekten kortekse ve hipotalamusa uzanan histaminerjik lifler",
+    rol: "Uyanıklık ve iştahın baskılanması.",
+    blok: { etki: ["Sedasyon: ajitasyon ve uykusuzlukta yararlı", "Anksiyolitik etki"],
+            yan: ["Gündüz uyuklama, bilişsel küntleşme", "İştah artışı ve kilo alımı", "Metabolik sendrom riskine katkı"] } },
+  { id: "M1", ad: "M1", fam: "mus", tip: "gpcr", sinyal: "Gq → IP3/DAG",
+    konum: "Korteks, hipokampus, striatum",
+    rol: "Öğrenme ve bellek; striatumda dopamin-asetilkolin dengesi.",
+    blok: { etki: ["Striatal dopamin-asetilkolin dengesini korur: EPS'yi azaltır"],
+            yan: ["Bellek ve dikkat bozulması", "Konfüzyon, deliryum (özellikle yaşlılarda)"] },
+    agonist: { etki: ["Kortikal M1 uyarımı: psikoz ve bilişsel belirtilerde düzelme"],
+               yan: ["Bulantı, kusma, terleme, salivasyon"] } },
+  { id: "M3", ad: "M3", fam: "mus", tip: "gpcr", sinyal: "Gq → IP3/DAG",
+    konum: "Ekzokrin bezler, mesane detrüsörü, bağırsak düz kası, pankreas β-hücreleri, göz",
+    rol: "Salgı, mesanenin boşalması, bağırsak hareketleri, insülin salınımı.",
+    blok: { etki: ["Bilinen terapötik katkısı yok"],
+            yan: ["Ağız kuruluğu, bulanık görme", "Konstipasyon; ağır olguda paralitik ileus", "İdrar retansiyonu", "β-hücresinde insülin salınımı azalır: diyabet riski"] } },
+  { id: "M4", ad: "M4", fam: "mus", tip: "gpcr", sinyal: "Gi/o → cAMP ↓",
+    konum: "Striatum (D1 orta dikenli nöronları), kolinerjik internöronlar, orta beyin",
+    rol: "Striatal dopamin salınımını dolaylı olarak frenleme.",
+    blok: { etki: ["Antikolinerjiklerin EPS'yi hafifletmesine katkı"],
+            yan: ["Diğer muskarinik blokajla birlikte bilişsel etkiler"] },
+    kismi: { etki: ["Striatal dopamin salınımını dolaylı olarak frenler"],
+             yan: ["Hipersalivasyon (sialore), özellikle gece"] },
+    agonist: { etki: ["Striatal dopamin salınımı azalır: D2 blokajı olmadan antipsikotik etki"],
+               yan: ["Bulantı, kusma, dispepsi"] } },
+  { id: "A1", ad: "α1", fam: "adr", tip: "gpcr", sinyal: "Gq → IP3/DAG",
+    konum: "Damar düz kası, prostat ve mesane boynu, beyinde noradrenerjik hedefler",
+    rol: "Vazokonstriksiyon, uyarılmışlık.",
+    blok: { etki: ["Sedasyona katkı", "Kâbus ve aşırı uyarılmışlıkta olası olumlu etki"],
+            yan: ["Ortostatik hipotansiyon, baş dönmesi, düşme", "Refleks taşikardi, burun tıkanıklığı", "Ejakülasyon bozukluğu, nadiren priapizm"] } },
+  { id: "A2", ad: "α2", fam: "adr", tip: "gpcr", sinyal: "Gi/o → cAMP ↓",
+    konum: "Presinaptik otoreseptör (lokus seruleus), noradrenerjik ve serotonerjik uçlar, damarlar",
+    rol: "Noradrenalin salınımının negatif geri bildirimi.",
+    blok: { etki: ["Noradrenalin ve serotonin salınımı artar: antidepresan potansiyel", "α2C blokajı: bilişsel katkı"],
+            yan: ["Kalp hızında artış, huzursuzluk (genellikle hafif)"] } },
+  { id: "SERT", ad: "SERT", fam: "tra", tip: "tra", sinyal: "Na⁺/Cl⁻ bağımlı taşıyıcı (SLC6A4)",
+    konum: "Serotonerjik sinir uçları",
+    rol: "Serotoninin sinaptik aralıktan geri alımı.",
+    blok: { etki: ["Antidepresan ve anksiyolitik katkı"],
+            yan: ["Bulantı, cinsel işlev bozukluğu", "Diğer serotonerjiklerle serotonin sendromu riski (teorik)"] } },
+  { id: "NET", ad: "NET", fam: "tra", tip: "tra", sinyal: "Na⁺/Cl⁻ bağımlı taşıyıcı (SLC6A2)",
+    konum: "Noradrenerjik sinir uçları; prefrontal kortekste dopamini de geri alır",
+    rol: "Noradrenalinin geri alımı.",
+    blok: { etki: ["Antidepresan etki (ketiapinin metaboliti norketiapin)", "Prefrontal dopamin artışı"],
+            yan: ["Taşikardi, terleme", "Konstipasyon, idrar retansiyonu", "Uykusuzluk"] } },
+  { id: "HERG", ad: "hERG", fam: "kan", tip: "kanal", sinyal: "Kv11.1 K⁺ kanalı (KCNH2), IKr akımı",
+    konum: "Kalp, ventrikül miyositleri",
+    rol: "Ventriküler repolarizasyon. Reseptör değildir ama antipsikotiklerin en önemli kardiyak güvenlik hedefidir.",
+    blok: { etki: ["Terapötik katkısı yok"],
+            yan: ["QTc uzaması", "Torsades de pointes ve ani kardiyak ölüm riski", "Hipokalemi, hipomagnezemi ve CYP inhibitörleri riski artırır"] } }
+];
+
+const DRUGS = [
+  /* ---------------- Tipik ---------------- */
+  { id: "haloperidol", ad: "Haloperidol", sinif: "tipik", grup: "Butirofenon", potens: "Yüksek potens",
+    kullanim: "Şizofreni, akut ajitasyon, deliryum, Tourette sendromu, palyatif bakımda bulantı-kusma.",
+    doz: "2–20 mg/gün oral; dekanoat 50–300 mg / 4 hafta", lai: true,
+    r: { D2: "4a", D3: "3a", D4: "3a", D1: "2a", "5HT2A": "2a", A1: "2a", "5HT7": "1a", HERG: "2b" },
+    se: { eps: 3, prl: 3, kilo: 1, sed: 1, orto: 1, ach: 0, qtc: 2 },
+    inci: ["Klinik çalışmalarda klasik karşılaştırma ilacı.", "Sedasyon ve antikolinerjik yükü düşük olduğu için deliryumda sık kullanılır.", "IV uygulamada QTc uzaması ve torsades riski: EKG izlemi önerilir.", "EPS ve nöroleptik malign sendrom riski yüksektir."] },
+  { id: "klorpromazin", ad: "Klorpromazin", sinif: "tipik", grup: "Fenotiyazin (alifatik)", potens: "Düşük potens",
+    kullanim: "Şizofreni, mani, inatçı hıçkırık, bulantı-kusma.",
+    doz: "75–600 mg/gün", lai: false,
+    r: { H1: "4a", A1: "4a", D2: "3a", D3: "3a", "5HT2A": "3a", "5HT6": "3a", D1: "2a", D4: "2a", "5HT2C": "2a", "5HT7": "2a", M1: "2a", M3: "2a", M4: "2a", A2: "1a", HERG: "2b" },
+    se: { eps: 2, prl: 2, kilo: 2, sed: 3, orto: 3, ach: 2, qtc: 2 },
+    inci: ["İlk antipsikotik (Delay ve Deniker, 1952). Doz eşdeğerliği hâlâ 'klorpromazin eşdeğeri' ile ifade edilir.", "Fotosensitivite, kolestatik sarılık, kornea ve lens birikimleri.", "Nöbet eşiğini düşürür; nadiren agranülositoz.", "Belirgin sedasyon ve ortostaz: düşük potensli tipiklerin prototipi."] },
+  { id: "flufenazin", ad: "Flufenazin", sinif: "tipik", grup: "Fenotiyazin (piperazin)", potens: "Yüksek potens",
+    kullanim: "Şizofreni, özellikle uzun etkili enjeksiyon ile idame.",
+    doz: "2,5–20 mg/gün; dekanoat 12,5–100 mg / 2–5 hafta", lai: true,
+    r: { D2: "4a", D3: "3a", "5HT7": "3a", A1: "3a", D1: "2a", D4: "2a", "5HT2A": "2a", "5HT6": "2a", H1: "2a", "5HT1A": "1a", "5HT2C": "1a", A2: "1a", HERG: "1b" },
+    se: { eps: 3, prl: 3, kilo: 1, sed: 1, orto: 1, ach: 1, qtc: 1 },
+    inci: ["EPS riski en yüksek ilaçlardan biri.", "Dekanoat formu en eski LAI seçeneklerinden.", "Sedasyon ve ortostaz düşük."] },
+  { id: "perfenazin", ad: "Perfenazin", sinif: "tipik", grup: "Fenotiyazin (piperazin)", potens: "Orta potens",
+    kullanim: "Şizofreni, şiddetli bulantı-kusma.",
+    doz: "8–64 mg/gün", lai: false,
+    r: { D2: "4a", D3: "4a", "5HT2A": "3a", H1: "3a", A1: "3a", D1: "2a", D4: "2a", "5HT6": "2a", "5HT7": "2a", "5HT1A": "1a", "5HT2C": "1a", A2: "1a", HERG: "1b" },
+    se: { eps: 2, prl: 2, kilo: 1, sed: 1, orto: 1, ach: 1, qtc: 1 },
+    inci: ["CATIE çalışmasında karşılaştırma ilacıydı; tedaviyi bırakma oranları birçok atipikle benzer bulundu.", "CYP2D6 ile metabolize olur; yavaş metabolizörlerde düzey artar.", "Antiemetik olarak da kullanılır."] },
+  { id: "tioridazin", ad: "Tioridazin", sinif: "tipik", grup: "Fenotiyazin (piperidin)", potens: "Düşük potens",
+    kullanim: "Diğer ilaçlara yanıt vermeyen şizofreni (çoğu ülkede kısıtlı ya da piyasadan çekildi).",
+    doz: "150–800 mg/gün (üst sınır 800 mg)", lai: false,
+    r: { HERG: "4b", D2: "3a", D3: "3a", M1: "3a", A1: "3a", D1: "2a", D4: "2a", "5HT2A": "2a", "5HT2C": "2a", "5HT6": "2a", "5HT7": "2a", H1: "2a", M3: "2a", M4: "2a", "5HT1A": "1a", A2: "1a" },
+    se: { eps: 1, prl: 2, kilo: 2, sed: 3, orto: 3, ach: 3, qtc: 3 },
+    inci: ["Doza bağlı belirgin QTc uzaması: en riskli antipsikotiklerden.", "800 mg/gün üzerinde pigmenter retinopati.", "Retrograd ejakülasyon.", "Güçlü antikolinerjik etki EPS'yi azaltır. CYP2D6 inhibitörleriyle (fluoksetin, paroksetin) birlikte kullanılmaz."] },
+  { id: "trifluoperazin", ad: "Trifluoperazin", sinif: "tipik", grup: "Fenotiyazin (piperazin)", potens: "Yüksek potens",
+    kullanim: "Şizofreni; düşük dozda kısa süreli anksiyete.",
+    doz: "5–40 mg/gün", lai: false,
+    r: { D2: "3a", D3: "3a", D1: "2a", D4: "2a", "5HT2A": "2a", "5HT6": "2a", H1: "2a", A1: "2a", "5HT2C": "1a", "5HT7": "1a", M1: "1a", A2: "1a", HERG: "1b" },
+    se: { eps: 3, prl: 2, kilo: 1, sed: 1, orto: 1, ach: 1, qtc: 1 },
+    inci: ["Yüksek EPS, düşük sedasyon.", "Aktive edici olabilir; sabah dozu tercih edilebilir."] },
+  { id: "pimozid", ad: "Pimozid", sinif: "tipik", grup: "Difenilbutilpiperidin", potens: "Yüksek potens",
+    kullanim: "Tourette sendromu, monosemptomatik hipokondriyak psikoz (deluzyonel parazitoz), şizofreni.",
+    doz: "1–10 mg/gün (Tourette'te en çok 10 mg)", lai: false,
+    r: { D2: "4a", D3: "4a", "5HT7": "4a", HERG: "4b", D4: "3a", "5HT2A": "2a", A1: "2a", "5HT1A": "1a", H1: "1a" },
+    se: { eps: 2, prl: 2, kilo: 1, sed: 1, orto: 1, ach: 1, qtc: 3 },
+    inci: ["Güçlü hERG blokajı: başlangıçta ve doz artışlarında EKG.", "CYP3A4 (klaritromisin, azoller, greyfurt) ve CYP2D6 inhibitörleriyle kontrendike.", "Uzun yarı ömür (yaklaşık 55 saat).", "5-HT7'ye en yüksek afiniteli antipsikotiklerden."] },
+  { id: "zuklopentiksol", ad: "Zuklopentiksol", sinif: "tipik", grup: "Tiyoksanten", potens: "Orta-yüksek potens",
+    kullanim: "Şizofreni; asetat formu akut ajitasyon ve psikozda.",
+    doz: "20–50 mg/gün oral; asetat 50–150 mg IM; dekanoat 200–400 mg / 2–4 hafta", lai: true,
+    r: { D2: "4a", D1: "3a", D3: "3a", "5HT2A": "3a", A1: "3a", D4: "2a", "5HT2C": "2a", "5HT6": "2a", "5HT7": "2a", H1: "2a", HERG: "1b" },
+    se: { eps: 2, prl: 2, kilo: 2, sed: 2, orto: 1, ach: 1, qtc: 1 },
+    inci: ["D1 ve D2'yi birlikte bloke eder.", "Asetat formu (Acuphase) tek enjeksiyonla 2–3 gün etkili; nöroleptik deneyimi olmayan hastada kullanılmaz.", "Belirgin sedatif."] },
+  { id: "flupentiksol", ad: "Flupentiksol", sinif: "tipik", grup: "Tiyoksanten", potens: "Yüksek potens",
+    kullanim: "Şizofreni; bazı ülkelerde düşük dozda depresyon.",
+    doz: "3–18 mg/gün; dekanoat 20–400 mg / 2–4 hafta", lai: true,
+    r: { D2: "4a", D1: "3a", D3: "3a", "5HT2A": "3a", "5HT7": "3a", H1: "3a", A1: "3a", D4: "2a", "5HT2C": "2a", "5HT6": "2a", HERG: "1b" },
+    se: { eps: 2, prl: 2, kilo: 2, sed: 1, orto: 1, ach: 1, qtc: 1 },
+    inci: ["Düşük dozda (0,5–3 mg) aktive edici ve antidepresan etki bildirilir.", "Cis-izomeri aktif formdur.", "Sedatif etkisi zuklopentiksolden az."] },
+  { id: "loksapin", ad: "Loksapin", sinif: "tipik", grup: "Dibenzoksazepin", potens: "Orta potens",
+    kullanim: "Şizofreni; inhaler formu akut ajitasyonda.",
+    doz: "20–100 mg/gün oral (en çok 250 mg); inhaler 10 mg", lai: false,
+    r: { "5HT2A": "3a", D4: "3a", H1: "3a", D1: "2a", D2: "2a", D3: "2a", "5HT2C": "2a", "5HT6": "2a", "5HT7": "2a", A1: "2a", M1: "1a", A2: "1a", HERG: "1b" },
+    se: { eps: 2, prl: 2, kilo: 1, sed: 2, orto: 2, ach: 1, qtc: 1 },
+    inci: ["Kimyasal olarak klozapine benzer; 5-HT2A afinitesi D2'den yüksek. Tipik sınıfta atipik bir farmakoloji.", "İnhaler formda bronkospazm: astım ve KOAH'ta kullanılmaz.", "Metaboliti amoksapin bir antidepresandır."] },
+  { id: "sulpirid", ad: "Sülpirid", sinif: "tipik", grup: "Benzamid", potens: "Düşük potens",
+    kullanim: "Şizofreni; bazı ülkelerde düşük dozda depresyon ve vertigo. Bazı kaynaklar atipik sınıfta sayar.",
+    doz: "200–2400 mg/gün", lai: false,
+    r: { D2: "3a", D3: "3a", D4: "1a", HERG: "1b" },
+    se: { eps: 1, prl: 3, kilo: 1, sed: 0, orto: 0, ach: 0, qtc: 1 },
+    inci: ["Seçici D2/D3 antagonisti; düşük dozda presinaptik otoreseptör blokajıyla aktive edici.", "Kan-beyin bariyerini zayıf geçer: hipofiz düzeyi yüksek, prolaktin çok artar.", "Böbrekle atılır; böbrek yetmezliğinde doz azaltılır.", "Sedatif ve antikolinerjik değildir."] },
+
+  /* ---------------- Atipik ---------------- */
+  { id: "klozapin", ad: "Klozapin", sinif: "atipik", grup: "Dibenzodiazepin", potens: "Prototip atipik",
+    kullanim: "Tedaviye dirençli şizofreni, şizofrenide intihar riskinin azaltılması, Parkinson psikozu (düşük doz).",
+    doz: "200–900 mg/gün (hedef kan düzeyi ≥350 ng/mL)", lai: false,
+    r: { H1: "4a", "5HT2A": "3a", "5HT2C": "3a", "5HT6": "3a", "5HT7": "3a", M1: "3a", A1: "3a", D1: "2a", D4: "2a", M3: "2a", M4: "2p", A2: "2a", D2: "1a", D3: "1a", "5HT1A": "1p", HERG: "1b" },
+    se: { eps: 0, prl: 0, kilo: 3, sed: 3, orto: 3, ach: 3, qtc: 1 },
+    inci: ["Tedaviye dirençli şizofrenide en etkili ilaç; intihar davranışını azaltır (InterSePT).", "Agranülositoz (yaklaşık %0,8): düzenli nötrofil sayımı zorunlu.", "İlk 4–8 haftada miyokardit: troponin ve CRP izlemi.", "Doza bağlı nöbet; konstipasyon ölümcül ileusa dönebilir.", "Gece sialoresi: M4 kısmi agonizm ve α2 blokajıyla ilişkili.", "Sigara CYP1A2'yi indükler; sigarayı bırakınca kan düzeyi hızla yükselir.", "D2 doluluğu düşük (%40–60) ve D2'den hızlı ayrışır: EPS ve prolaktin artışı yok denecek kadar az."] },
+  { id: "olanzapin", ad: "Olanzapin", sinif: "atipik", grup: "Tienobenzodiazepin", potens: "Çok reseptörlü",
+    kullanim: "Şizofreni, bipolar mani ve idame, akut ajitasyon (IM).",
+    doz: "5–20 mg/gün; pamoat LAI 150–405 mg / 2–4 hafta", lai: true,
+    r: { H1: "4a", "5HT2A": "3a", "5HT6": "3a", M1: "3a", D1: "2a", D2: "2a", D3: "2a", D4: "2a", "5HT2C": "2a", M3: "2a", M4: "2a", A1: "2a", "5HT7": "1a", A2: "1a", HERG: "1b" },
+    se: { eps: 1, prl: 1, kilo: 3, sed: 2, orto: 1, ach: 2, qtc: 1 },
+    inci: ["Klozapinle birlikte en yüksek kilo ve metabolik risk: H1, 5-HT2C ve M3 blokajının ortak sonucu.", "Pamoat LAI sonrası en az 3 saat gözlem: enjeksiyon sonrası deliryum/sedasyon sendromu.", "Sigara CYP1A2 üzerinden düzeyi düşürür.", "Samidorfanla kombinasyonu kilo artışını azaltır."] },
+  { id: "ketiapin", ad: "Ketiapin", sinif: "atipik", grup: "Dibenzotiazepin", potens: "Düşük D2 afinitesi",
+    kullanim: "Şizofreni, bipolar mani ve depresyon, majör depresyonda ek tedavi (XR).",
+    doz: "300–800 mg/gün (bipolar depresyonda 300 mg)", lai: false,
+    r: { H1: "3a", A1: "3a", "5HT2A": "2a", M1: "2a", NET: "2b", HERG: "2b", D1: "1a", D2: "1a", D3: "1a", "5HT1A": "1p", "5HT7": "1a", M3: "1a", A2: "1a" },
+    se: { eps: 0, prl: 0, kilo: 2, sed: 3, orto: 2, ach: 1, qtc: 1 },
+    inci: ["D2'den çok hızlı ayrışır: EPS ve prolaktin artışı çok düşük. Parkinson hastalığında tercih edilir.", "Metaboliti norketiapin NET'i inhibe eder ve 5-HT1A kısmi agonistidir: bipolar depresyondaki etkinin kaynağı.", "Düşük dozda neredeyse yalnızca H1 blokajı yapar; uykusuzluk için kullanımı metabolik risk nedeniyle önerilmez.", "Kötüye kullanım bildirimleri vardır."] },
+  { id: "risperidon", ad: "Risperidon", sinif: "atipik", grup: "Benzisoksazol", potens: "Yüksek 5-HT2A/D2",
+    kullanim: "Şizofreni, bipolar mani, otizmde irritabilite, demansta kısa süreli saldırganlık.",
+    doz: "2–6 mg/gün; LAI 25–50 mg / 2 hafta ya da aylık", lai: true,
+    r: { "5HT2A": "4a", A1: "4a", D2: "3a", D4: "3a", "5HT7": "3a", A2: "3a", D3: "2a", "5HT2C": "2a", H1: "2a", D1: "1a", "5HT1A": "1a", HERG: "1b" },
+    se: { eps: 2, prl: 3, kilo: 2, sed: 1, orto: 2, ach: 0, qtc: 1 },
+    inci: ["EPS doza bağlıdır; 6 mg/gün üzerinde tipik gibi davranır.", "Atipikler arasında prolaktini en çok artıran ilaçlardandır (paliperidonla birlikte).", "Güçlü α1 blokajı: başlangıçta titrasyon gerekir.", "Aktif metaboliti 9-hidroksirisperidon, yani paliperidon."] },
+  { id: "paliperidon", ad: "Paliperidon", sinif: "atipik", grup: "Benzisoksazol", potens: "Yüksek 5-HT2A/D2",
+    kullanim: "Şizofreni, şizoaffektif bozukluk; aylık, 3 aylık ve 6 aylık enjeksiyonlar.",
+    doz: "3–12 mg/gün (uzatılmış salım); palmitat aylık / 3 aylık / 6 aylık", lai: true,
+    r: { "5HT2A": "4a", D2: "3a", D3: "3a", "5HT7": "3a", A1: "3a", D4: "2a", "5HT2C": "2a", H1: "2a", A2: "2a", HERG: "1b" },
+    se: { eps: 2, prl: 3, kilo: 2, sed: 1, orto: 2, ach: 0, qtc: 1 },
+    inci: ["Risperidonun aktif metabolitidir.", "Büyük ölçüde değişmeden böbrekle atılır: CYP etkileşimi az, böbrek yetmezliğinde doz ayarı gerekir.", "6 aylık palmitat formu yılda iki enjeksiyonla idame sağlar."] },
+  { id: "ziprasidon", ad: "Ziprasidon", sinif: "atipik", grup: "Benzisotiyazol", potens: "Yüksek 5-HT2A/D2",
+    kullanim: "Şizofreni, bipolar mani, akut ajitasyon (IM).",
+    doz: "80–160 mg/gün, iki doza bölünmüş, yemekle", lai: false,
+    r: { "5HT2A": "4a", D2: "3a", D3: "3a", "5HT1A": "3p", "5HT2C": "3a", "5HT7": "3a", HERG: "3b", D1: "2a", D4: "2a", "5HT6": "2a", H1: "2a", A1: "2a", SERT: "2b", NET: "2b", A2: "1a" },
+    se: { eps: 1, prl: 1, kilo: 0, sed: 1, orto: 1, ach: 0, qtc: 2 },
+    inci: ["En az 500 kcal'lik yemekle alınmalıdır; aç karnına emilim yaklaşık yarıya iner.", "Metabolik açıdan en nötr ilaçlardan.", "Atipikler arasında QTc uzaması görece belirgin.", "5-HT1A agonizmi ile SERT/NET inhibisyonu antidepresan potansiyel taşır. Nadir DRESS uyarısı vardır."] },
+  { id: "aripiprazol", ad: "Aripiprazol", sinif: "atipik", grup: "Kinolinon", potens: "D2 kısmi agonist",
+    kullanim: "Şizofreni, bipolar mani ve idame, majör depresyonda ek tedavi, Tourette, otizmde irritabilite.",
+    doz: "10–30 mg/gün; LAI aylık ya da 2 aylık", lai: true,
+    r: { D2: "4p", D3: "4p", "5HT1A": "3p", "5HT2A": "3a", "5HT2C": "2p", "5HT7": "2a", H1: "2a", A1: "2a", D1: "1a", D4: "1a", "5HT6": "1a", A2: "1a" },
+    se: { eps: 1, prl: 0, kilo: 1, sed: 1, orto: 0, ach: 0, qtc: 0 },
+    inci: ["İlk ruhsatlı D2 kısmi agonist: dopamin sistemini dengeler.", "Prolaktini düşürür; başka antipsikotiğin yaptığı hiperprolaktinemide eklenebilir.", "Başlıca yan etkisi akatizi.", "Kumar, alışveriş gibi dürtü kontrol sorunları bildirilmiştir.", "Uzun yarı ömür (yaklaşık 75 saat). Metabolik riski düşük."] },
+  { id: "brekspiprazol", ad: "Brekspiprazol", sinif: "atipik", grup: "Kinolinon", potens: "D2 kısmi agonist",
+    kullanim: "Şizofreni, majör depresyonda ek tedavi, Alzheimer demansına bağlı ajitasyon (ABD).",
+    doz: "2–4 mg/gün", lai: false,
+    r: { D2: "4p", "5HT1A": "4p", "5HT2A": "4a", A2: "4a", D3: "3p", D4: "3a", "5HT7": "3a", A1: "3a", "5HT2C": "2a", "5HT6": "2a", H1: "2a", D1: "1a" },
+    se: { eps: 1, prl: 0, kilo: 1, sed: 1, orto: 0, ach: 0, qtc: 0 },
+    inci: ["D2'deki içsel etkinliği aripiprazolden düşüktür; 5-HT1A, 5-HT2A ve α blokajı daha güçlüdür.", "Bu sayede akatizi ve huzursuzluk aripiprazolden daha seyrek.", "Kilo artışı hafif-orta düzeyde olabilir."] },
+  { id: "kariprazin", ad: "Kariprazin", sinif: "atipik", grup: "Piperazin türevi", potens: "D3 > D2 kısmi agonist",
+    kullanim: "Şizofreni (özellikle baskın negatif belirtiler), bipolar mani, bipolar depresyon.",
+    doz: "1,5–6 mg/gün", lai: false,
+    r: { D3: "4p", D2: "4p", "5HT1A": "3p", "5HT2A": "2a", H1: "2a", "5HT2C": "1a", "5HT7": "1a", A1: "1a" },
+    se: { eps: 2, prl: 0, kilo: 1, sed: 1, orto: 0, ach: 0, qtc: 0 },
+    inci: ["D3 reseptörüne afinitesi en yüksek antipsikotik.", "Baskın negatif belirtilerde risperidondan üstün bulundu (Németh ve ark., 2017).", "Aktif metaboliti didesmetilkariprazinin yarı ömrü 1–3 hafta: yan etkiler geç ortaya çıkabilir, ilaç kesilince etkisi uzun sürer.", "En sık yan etkileri akatizi ve parkinsonizm."] },
+  { id: "lurasidon", ad: "Lurasidon", sinif: "atipik", grup: "Benzisotiyazol", potens: "Yüksek 5-HT2A/D2",
+    kullanim: "Şizofreni (13 yaş üstü), bipolar depresyon.",
+    doz: "40–160 mg/gün, en az 350 kcal yemekle", lai: false,
+    r: { "5HT2A": "4a", "5HT7": "4a", D2: "3a", "5HT1A": "3p", D3: "2a", D4: "2a", A1: "2a", A2: "2a", D1: "1a", "5HT2C": "1a" },
+    se: { eps: 2, prl: 1, kilo: 1, sed: 2, orto: 0, ach: 0, qtc: 0 },
+    inci: ["Güçlü 5-HT7 antagonizmi ve 5-HT1A kısmi agonizmi bipolar depresyondaki etkinlikle ilişkilendirilir.", "H1 ve M1 afinitesi yok denecek kadar az: metabolik açıdan nötr.", "Akatizi ve doza bağlı sedasyon.", "Güçlü CYP3A4 inhibitör ve indükleyicileriyle birlikte kullanılmaz."] },
+  { id: "asenapin", ad: "Asenapin", sinif: "atipik", grup: "Dibenzo-oksepino pirol", potens: "Çok reseptörlü",
+    kullanim: "Bipolar mani (erişkin ve çocuk), şizofreni.",
+    doz: "5–10 mg günde iki kez, dil altı", lai: false,
+    r: { D3: "4a", "5HT2A": "4a", "5HT2C": "4a", "5HT6": "4a", "5HT7": "4a", H1: "4a", D1: "3a", D2: "3a", D4: "3a", "5HT1A": "3p", A1: "3a", A2: "3a", HERG: "1b" },
+    se: { eps: 1, prl: 1, kilo: 2, sed: 2, orto: 1, ach: 0, qtc: 1 },
+    inci: ["Hemen her hedefe yüksek afiniteyle bağlanır ama muskarinik afinitesi yoktur.", "Dil altı alınır; yutulursa biyoyararlanım %2'nin altına düşer. Sonrasında 10 dakika yiyip içilmez.", "Ağızda uyuşma ve tat bozukluğu sık görülür.", "ABD'de transdermal formu vardır."] },
+  { id: "iloperidon", ad: "İloperidon", sinif: "atipik", grup: "Benzisoksazol türevi", potens: "Yüksek 5-HT2A/D2",
+    kullanim: "Şizofreni, bipolar mani (ABD).",
+    doz: "12–24 mg/gün, iki doza bölünmüş", lai: false,
+    r: { A1: "4a", D2: "3a", D3: "3a", "5HT2A": "3a", D4: "2a", "5HT2C": "2a", "5HT6": "2a", "5HT7": "2a", HERG: "2b", D1: "1a", "5HT1A": "1p", H1: "1a", A2: "1a" },
+    se: { eps: 0, prl: 1, kilo: 2, sed: 1, orto: 3, ach: 1, qtc: 2 },
+    inci: ["Çok güçlü α1 blokajı: ortostaz nedeniyle günler süren yavaş titrasyon zorunlu.", "EPS ve akatizi riski düşük.", "QTc uzaması orta düzeyde; CYP2D6 ve 3A4 inhibitörleriyle doz azaltılır."] },
+  { id: "lumateperon", ad: "Lumateperon", sinif: "atipik", grup: "Tetrasiklik butirofenon", potens: "Çok yüksek 5-HT2A/D2",
+    kullanim: "Şizofreni, bipolar depresyon, majör depresyonda ek tedavi (ABD).",
+    doz: "42 mg/gün, titrasyonsuz", lai: false,
+    r: { "5HT2A": "4a", D1: "2a", D2: "2p", D4: "2a", A1: "2a", SERT: "2b", "5HT2C": "1a" },
+    se: { eps: 0, prl: 0, kilo: 0, sed: 2, orto: 0, ach: 0, qtc: 0 },
+    inci: ["5-HT2A afinitesi D2'ninkinden yaklaşık 60 kat yüksek.", "Yaklaşık %40 striatal D2 doluluğuyla etkili; presinaptik kısmi agonist, postsinaptik antagonist.", "D1 üzerinden NMDA ve AMPA glutamat iletimini dolaylı olarak düzenler; SERT'i de inhibe eder.", "Motor ve metabolik yan etkiler plaseboya yakın. Ana yan etki sedasyon."] },
+  { id: "amisulprid", ad: "Amisülprid", sinif: "atipik", grup: "Benzamid", potens: "Seçici D2/D3",
+    kullanim: "Şizofreni; düşük dozda baskın negatif belirtiler ve distimi.",
+    doz: "400–800 mg/gün (pozitif belirtiler), 50–300 mg/gün (negatif belirtiler)", lai: false,
+    r: { D2: "3a", D3: "3a", "5HT7": "2a", HERG: "2b" },
+    se: { eps: 1, prl: 3, kilo: 1, sed: 0, orto: 0, ach: 0, qtc: 2 },
+    inci: ["Düşük dozda presinaptik otoreseptörleri bloke edip dopamin iletimini artırır; yüksek dozda postsinaptik blokaj yapar.", "5-HT7 antagonizmi antidepresan etkiye katkı verir.", "Prolaktini çok artırır. Böbrekle atılır.", "QTc uzaması doza bağlı. Metabolik riski düşük."] },
+  { id: "sertindol", ad: "Sertindol", sinif: "atipik", grup: "Fenilindol", potens: "Yüksek 5-HT2A/D2",
+    kullanim: "Başka ilaçları tolere edemeyen hastalarda şizofreni (kısıtlı).",
+    doz: "12–20 mg/gün", lai: false,
+    r: { D2: "4a", "5HT2A": "4a", "5HT2C": "4a", HERG: "4b", D3: "3a", A1: "3a", D4: "2a", "5HT6": "2a", "5HT7": "2a", H1: "1a" },
+    se: { eps: 0, prl: 1, kilo: 2, sed: 0, orto: 2, ach: 0, qtc: 3 },
+    inci: ["Güçlü hERG blokajı nedeniyle 1998'de askıya alındı; EKG izlemi şartıyla kısıtlı olarak geri döndü.", "EPS riski plaseboya yakın.", "Ejakülat hacminde azalma ve burun tıkanıklığı sık."] },
+  { id: "pimavanserin", ad: "Pimavanserin", sinif: "atipik", grup: "Üre türevi", potens: "Seçici 5-HT2A",
+    kullanim: "Parkinson hastalığı psikozunda varsanı ve sanrılar (ABD).",
+    doz: "34 mg/gün", lai: false,
+    r: { "5HT2A": "4i", "5HT2C": "3i", HERG: "2b" },
+    se: { eps: 0, prl: 0, kilo: 0, sed: 0, orto: 0, ach: 0, qtc: 2 },
+    inci: ["Seçici 5-HT2A ters agonisti; dopamin reseptörlerine bağlanmaz.", "Bu nedenle Parkinson hastasının motor belirtilerini kötüleştirmez.", "QTc uzaması yapabilir.", "Tüm antipsikotikler gibi demanslı yaşlılarda artmış mortalite uyarısı taşır."] },
+
+  /* ---------------- Yeni mekanizma ---------------- */
+  { id: "ksanomelin", ad: "Ksanomelin–Trospiyum", sinif: "yeni", grup: "Muskarinik agonist + periferik antagonist", potens: "D2'ye bağlanmaz",
+    kullanim: "Şizofreni (ABD, 2024). D2'ye bağlanmadan etki eden ilk ruhsatlı antipsikotik.",
+    doz: "50/20 mg günde iki kez başlanır, 125/30 mg'a kadar; aç karnına", lai: false,
+    r: { M1: "4g", M4: "4g" },
+    se: { eps: 0, prl: 0, kilo: 0, sed: 1, orto: 0, ach: 2, qtc: 0 },
+    inci: ["Ksanomelin beyinde M1 ve M4 reseptörlerini uyarır; striatal dopamin salınımı dolaylı yoldan azalır.", "Trospiyum kan-beyin bariyerini geçmeyen bir muskarinik antagonisttir; ksanomelinin periferik kolinerjik yan etkilerini (terleme, salivasyon, kusma) azaltır.", "Sık yan etkiler: bulantı, kusma, dispepsi, konstipasyon, taşikardi. Antikolinerjik puanı trospiyumdan gelir.", "EPS, prolaktin artışı ve kilo alımı beklenmez.", "İdrar retansiyonu, dar açılı glokom ve orta-ağır karaciğer yetmezliğinde kullanılmaz."] }
+];
+
+const REC_BY = Object.fromEntries(REC.map(r => [r.id, r]));
+const DRUG_BY = Object.fromEntries(DRUGS.map(d => [d.id, d]));
+DRUGS.forEach(d => {
+  d.links = Object.entries(d.r).map(([rid, s]) => ({ rid, lv: +s[0], m: s[1] }))
+    .sort((a, b) => b.lv - a.lv || REC.indexOf(REC_BY[a.rid]) - REC.indexOf(REC_BY[b.rid]));
+});
+REC.forEach(r => {
+  r.links = DRUGS.filter(d => d.r[r.id]).map(d => ({ did: d.id, lv: +d.r[r.id][0], m: d.r[r.id][1] }))
+    .sort((a, b) => b.lv - a.lv || DRUGS.indexOf(DRUG_BY[a.did]) - DRUGS.indexOf(DRUG_BY[b.did]));
+});
+
+function modeText(r, m) {
+  if (m === "p" && r.kismi) return { t: r.kismi, ad: "Kısmi agonizm" };
+  if (m === "g" && r.agonist) return { t: r.agonist, ad: "Agonizm" };
+  return { t: r.blok, ad: r.tip === "gpcr" ? "Antagonizm / blokaj" : "Blokaj / inhibisyon" };
+}
+
+/* =====================================================================
+   DURUM
+   ===================================================================== */
+
+const S = {
+  sel: { k: "drug", id: "klozapin" },
+  cmp: null,
+  hist: [],
+  tab: "drug",
+  filter: "all",
+  q: "",
+  quiz: null,
+  score: { ok: 0, n: 0, streak: 0, best: 0 }
+};
+const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const $ = s => document.querySelector(s);
+const detailEl = $("#detail");
+const listEl = $("#list");
+
+$("#subtitle").textContent = `${DRUGS.length} ilaç · ${REC.length} hedef · ilaçtan reseptöre, reseptörden ilaca gezin`;
+
+/* =====================================================================
+   LİSTE (sol panel)
+   ===================================================================== */
+
+function trLower(s) { return s.toLocaleLowerCase("tr"); }
+
+function renderFilters() {
+  const f = $("#filters");
+  if (S.tab === "drug") {
+    const opts = [["all", "Tümü"], ["tipik", "Tipik"], ["atipik", "Atipik"], ["yeni", "Yeni"]];
+    f.innerHTML = opts.map(([k, l]) => `<button class="chip" type="button" data-filter="${k}" aria-pressed="${S.filter === k}">${l}</button>`).join("");
+  } else {
+    const opts = [["all", "Tümü"]].concat(Object.entries(FAM).map(([k, v]) => [k, v.ad]));
+    f.innerHTML = opts.map(([k, l]) => `<button class="chip" type="button" data-filter="${k}" aria-pressed="${S.filter === k}">${l}</button>`).join("");
+  }
+}
+
+function pillIcon(d) { return `<span class="pill-ic" style="--c:${CLS[d.sinif].c}"></span>`; }
+function helixIcon(r) {
+  const n = r.tip === "gpcr" ? 7 : r.tip === "tra" ? 6 : 4;
+  return `<span class="helix-ic" style="--c:${FAM[r.fam].c}">${"<i></i>".repeat(n)}</span>`;
+}
+
+function renderList() {
+  const q = trLower(S.q.trim());
+  let html = "";
+  if (S.tab === "drug") {
+    for (const cls of ["tipik", "atipik", "yeni"]) {
+      if (S.filter !== "all" && S.filter !== cls) continue;
+      const items = DRUGS.filter(d => d.sinif === cls && (!q || trLower(d.ad + " " + d.grup).includes(q)));
+      if (!items.length) continue;
+      html += `<div class="grp">${CLS[cls].uzun} · ${items.length}</div>`;
+      html += items.map(d => {
+        const active = S.sel.k === "drug" && S.sel.id === d.id && !S.quiz;
+        return `<button class="row${active ? " active" : ""}" type="button" data-drug="${d.id}">${pillIcon(d)}<span class="nm">${d.ad}</span><span class="sub">${d.links.length} hedef</span></button>`;
+      }).join("");
+    }
+  } else {
+    for (const fk of Object.keys(FAM)) {
+      if (S.filter !== "all" && S.filter !== fk) continue;
+      const items = REC.filter(r => r.fam === fk && (!q || trLower(r.ad + " " + r.id + " " + FAM[fk].ad).includes(q)));
+      if (!items.length) continue;
+      html += `<div class="grp">${FAM[fk].ad}</div>`;
+      html += items.map(r => {
+        const active = S.sel.k === "rec" && S.sel.id === r.id && !S.quiz;
+        return `<button class="row${active ? " active" : ""}" type="button" data-rec="${r.id}">${helixIcon(r)}<span class="nm mono">${r.ad}</span><span class="sub">${r.links.length} ilaç</span></button>`;
+      }).join("");
+    }
+  }
+  listEl.innerHTML = html || `<p class="small" style="padding:12px">"${S.q}" için sonuç yok.</p>`;
+}
+
+function setTab(t) {
+  S.tab = t; S.filter = "all";
+  $("#tabDrug").setAttribute("aria-selected", t === "drug");
+  $("#tabRec").setAttribute("aria-selected", t === "rec");
+  renderFilters(); renderList();
+}
+
+/* =====================================================================
+   AYRINTI (sağ panel)
+   ===================================================================== */
+
+function bars(lv, c, cls) {
+  let h = `<span class="bars${cls ? " " + cls : ""}" style="--c:${c};--c2:${c}">`;
+  for (let i = 1; i <= 4; i++) h += `<i class="${i <= lv ? "on" : ""}"></i>`;
+  return h + "</span>";
+}
+function meter(lv, ghost) { return `<span class="meter l${lv}${ghost ? " ghost" : ""}"><i></i><i></i><i></i></span>`; }
+function recChip(rid, asSpan) {
+  const r = REC_BY[rid];
+  return asSpan ? `<span class="rchip" style="--c:${FAM[r.fam].c}">${r.ad}</span>`
+                : `<button class="rchip" type="button" data-rec="${rid}" style="--c:${FAM[r.fam].c}">${r.ad}</button>`;
+}
+
+function navBar(label) {
+  const prev = S.hist[S.hist.length - 1];
+  let prevName = "";
+  if (prev) prevName = prev.k === "drug" ? DRUG_BY[prev.id].ad : REC_BY[prev.id].ad;
+  return `<div class="navbar">${prev ? `<button class="back" type="button" id="backBtn">← ${prevName}</button>` : "<span></span>"}<span class="crumbs">${label}</span></div>`;
+}
+
+function renderDrug(d) {
+  const cmp = S.cmp && S.cmp !== d.id ? DRUG_BY[S.cmp] : null;
+  const cc = CLS[d.sinif].c;
+
+  // Parmak izi
+  let fpRows;
+  if (cmp) {
+    const ids = REC.map(r => r.id).filter(id => d.r[id] || cmp.r[id]);
+    ids.sort((a, b) => ((+(d.r[b] || "0")[0]) - (+(d.r[a] || "0")[0])) || ((+(cmp.r[b] || "0")[0]) - (+(cmp.r[a] || "0")[0])));
+    fpRows = ids.map(id => {
+      const r = REC_BY[id];
+      const a = d.r[id], b = cmp.r[id];
+      const la = a ? +a[0] : 0, lb = b ? +b[0] : 0;
+      const ma = a ? ACT_SHORT[a[1]] : "–", mb = b ? ACT_SHORT[b[1]] : "–";
+      return `<li><button class="fp-row cmp" type="button" data-rec="${id}">${helixIcon(r)}<span class="rn">${r.ad}</span>
+        <span class="fp-mid">${bars(la, cc)}${bars(lb, CLS[cmp.sinif].c, "b2")}<span class="mode" style="--c:var(--muted)">${ma} · ${mb}</span></span>
+        <span class="ki">${la ? KI[la] : "–"}<br>${lb ? KI[lb] : "–"}</span></button></li>`;
+    }).join("");
+  } else {
+    fpRows = d.links.map(l => {
+      const r = REC_BY[l.rid];
+      return `<li><button class="fp-row" type="button" data-rec="${l.rid}">${helixIcon(r)}<span class="rn">${r.ad}</span>
+        <span class="fp-mid">${bars(l.lv, ACT[l.m].c)}<span class="mode" style="--c:${ACT[l.m].c}">${ACT[l.m].ad} · ${LV[l.lv]}</span></span>
+        <span class="ki">${KI[l.lv]}<br>nM</span></button></li>`;
+    }).join("");
+  }
+
+  // Türetilmiş etki / yan etki
+  const etki = [], yan = [];
+  d.links.filter(l => l.lv >= 2).forEach(l => {
+    const r = REC_BY[l.rid];
+    const mt = modeText(r, l.m).t;
+    const n = l.lv >= 3 ? 2 : 1;
+    mt.etki.slice(0, n).forEach(t => { if (!/yok|beklenmez|tanımlanmamış|sınırlı|gösterilemedi/i.test(t)) etki.push([l.rid, t]); });
+    mt.yan.slice(0, n).forEach(t => { if (!/beklenmez|tanımlanmamış|net ilişkilendirilmemiş/i.test(t)) yan.push([l.rid, t]); });
+  });
+  const fxList = arr => arr.length ? arr.map(([rid, t]) => `<li>${recChip(rid)}<span>${t}</span></li>`).join("") : `<li><span></span><span class="small">Belirgin katkı yok.</span></li>`;
+
+  // Klinik yan etki profili
+  const seRows = SE_KEYS.map(([k, l]) => {
+    if (cmp) return `<div class="se-row"><span>${l}</span><span class="se-stack">${meter(d.se[k])}${meter(cmp.se[k], true)}</span><span class="lv">${SE_LV[d.se[k]]}<br>${SE_LV[cmp.se[k]]}</span></div>`;
+    return `<div class="se-row"><span>${l}</span>${meter(d.se[k])}<span class="lv">${SE_LV[d.se[k]]}</span></div>`;
+  }).join("");
+
+  const cmpOpts = `<option value="">Karşılaştır…</option>` + ["tipik", "atipik", "yeni"].map(c =>
+    `<optgroup label="${CLS[c].ad}">` + DRUGS.filter(x => x.sinif === c && x.id !== d.id).map(x => `<option value="${x.id}"${S.cmp === x.id ? " selected" : ""}>${x.ad}</option>`).join("") + "</optgroup>").join("");
+
+  const cmpLegend = cmp ? `<div class="cmp-legend"><span><i style="background:${cc}"></i>${d.ad}</span><span><i style="box-shadow: inset 0 0 0 1.5px ${CLS[cmp.sinif].c}"></i>${cmp.ad}</span><button class="chip" type="button" id="cmpClear">Karşılaştırmayı kapat</button></div>` : "";
+
+  detailEl.innerHTML = `
+    ${navBar("İlaç")}
+    <div class="eyebrow" style="--c:${cc}"><span class="dot"></span>${CLS[d.sinif].ad} · ${d.grup} · ${d.potens}</div>
+    <h2>${d.ad}</h2>
+    <p class="lede">${d.kullanim}</p>
+    <div class="meta">
+      <span class="tag">Doz: <b>${d.doz}</b></span>
+      <span class="tag">Uzun etkili enjeksiyon: <b>${d.lai ? "var" : "yok"}</b></span>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><h3>Reseptör parmak izi</h3>
+        <label><span class="small" style="position:absolute;left:-9999px">Karşılaştırılacak ilaç</span><select class="select" id="cmpSel">${cmpOpts}</select></label>
+      </div>
+      <p class="cap">Afinite sırasına göre. Bir reseptöre tıklayınca o reseptörü bağlayan bütün ilaçlar açılır.</p>
+      ${cmpLegend}
+      <ul class="fp">${fpRows}</ul>
+    </div>
+
+    <div class="sec">
+      <h3>Bu profilden ne beklenir?</h3>
+      <p class="cap">Orta ve üzeri afiniteli hedeflerden türetildi. Gerçek klinik etki, terapötik dozdaki doluluğa ve D2'ye göre göreli afiniteye bağlıdır.</p>
+      <div class="fx">
+        <div class="fx-col" style="--c:var(--sev-1)"><h4>Terapötik katkı</h4><ul>${fxList(etki)}</ul></div>
+        <div class="fx-col" style="--c:var(--sev-3)"><h4>Yan etki katkısı</h4><ul>${fxList(yan)}</ul></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h3>Klinik yan etki profili</h3>
+      <p class="cap">Klinik gözleme dayalı yarı-nicel puan (yok, düşük, orta, yüksek).</p>
+      <div class="se">${seRows}</div>
+    </div>
+
+    <div class="sec">
+      <h3>Klinik notlar</h3>
+      <ul class="pearls">${d.inci.map(x => `<li>${x}</li>`).join("")}</ul>
+    </div>`;
+}
+
+function renderRec(r) {
+  const fc = FAM[r.fam].c;
+  const tipAd = r.tip === "gpcr" ? "GPCR · 7 sarmal" : r.tip === "tra" ? "Taşıyıcı · 12 sarmal" : "İyon kanalı · tetramer";
+  const blocks = [];
+  const anyAnt = r.links.some(l => "aib".includes(l.m));
+  const anyPa = r.links.some(l => l.m === "p");
+  const anyAg = r.links.some(l => l.m === "g");
+  const block = (title, c, t) => `<div class="mode-block" style="--c:${c}"><h4><i></i>${title}</h4>
+      <div class="etki"><div class="lab">Etki</div><ul>${t.etki.map(x => `<li>${x}</li>`).join("")}</ul></div>
+      <div class="yan"><div class="lab">Yan etki</div><ul>${t.yan.map(x => `<li>${x}</li>`).join("")}</ul></div></div>`;
+  if (anyAnt || (!anyPa && !anyAg)) blocks.push(block(r.tip === "gpcr" ? "Antagonizm / blokaj" : "Blokaj / inhibisyon", ACT[r.tip === "gpcr" ? "a" : "b"].c, r.blok));
+  if (r.kismi && anyPa) blocks.push(block("Kısmi agonizm", ACT.p.c, r.kismi));
+  if (r.agonist && anyAg) blocks.push(block("Agonizm", ACT.g.c, r.agonist));
+
+  const rows = r.links.map(l => {
+    const d = DRUG_BY[l.did];
+    return `<li><button class="fp-row drugrow" type="button" data-drug="${d.id}">${pillIcon(d)}<span class="dn">${d.ad}</span>
+      <span class="fp-mid">${bars(l.lv, ACT[l.m].c)}<span class="mode" style="--c:${ACT[l.m].c}">${ACT[l.m].ad} · ${CLS[d.sinif].ad}</span></span>
+      <span class="ki">${KI[l.lv]}<br>nM</span></button></li>`;
+  }).join("");
+
+  const nT = r.links.filter(l => DRUG_BY[l.did].sinif === "tipik").length;
+  const nA = r.links.length - nT;
+
+  detailEl.innerHTML = `
+    ${navBar("Reseptör")}
+    <div class="eyebrow" style="--c:${fc}"><span class="dot"></span>${FAM[r.fam].ad} · ${tipAd}</div>
+    <h2 class="mono">${r.ad}</h2>
+    <p class="lede">${r.rol}</p>
+    <dl class="kv">
+      <div><dt>Sinyal</dt><dd>${r.sinyal}</dd></div>
+      <div><dt>Konum</dt><dd>${r.konum}</dd></div>
+    </dl>
+
+    <div class="sec">
+      <h3>Etki ve yan etkiler</h3>
+      <p class="cap">Antipsikotiklerin bu hedefi nasıl etkilediğine göre.</p>
+      ${blocks.join("")}
+    </div>
+
+    <div class="sec">
+      <h3>Bu hedefe bağlanan ilaçlar</h3>
+      <div class="stat"><b>${r.links.length}</b><span>/ ${DRUGS.length} ilaç · ${nT} tipik, ${nA} atipik veya yeni</span></div>
+      <ul class="fp">${rows || `<li class="small">Bu atlastaki ilaçların hiçbiri anlamlı afiniteyle bağlanmıyor.</li>`}</ul>
+    </div>`;
+}
+
+function renderDetail() {
+  if (S.quiz) return renderQuiz();
+  if (S.sel.k === "drug") renderDrug(DRUG_BY[S.sel.id]); else renderRec(REC_BY[S.sel.id]);
+  detailEl.scrollTop = 0;
+}
+
+/* =====================================================================
+   OYUN: Parmak izinden ilacı bul
+   ===================================================================== */
+
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function newQuestion() {
+  const prev = S.quiz && S.quiz.answer;
+  let pool = DRUGS.filter(d => d.id !== prev);
+  const ans = pool[Math.floor(Math.random() * pool.length)];
+  const others = shuffle(DRUGS.filter(d => d.id !== ans.id)).slice(0, 3);
+  S.quiz = { answer: ans.id, options: shuffle([ans, ...others].map(d => d.id)), picked: null, hint: false };
+  applySelection();
+}
+
+function renderQuiz() {
+  const z = S.quiz, d = DRUG_BY[z.answer];
+  const rows = d.links.map(l => {
+    const r = REC_BY[l.rid];
+    return `<li><div class="fp-row static">${helixIcon(r)}<span class="rn">${r.ad}</span>
+      <span class="fp-mid">${bars(l.lv, ACT[l.m].c)}<span class="mode" style="--c:${ACT[l.m].c}">${ACT[l.m].ad} · ${LV[l.lv]}</span></span>
+      <span class="ki">${KI[l.lv]}<br>nM</span></div></li>`;
+  }).join("");
+  const opts = z.options.map(id => {
+    const o = DRUG_BY[id];
+    let cls = "";
+    if (z.picked) { if (id === z.answer) cls = " right"; else if (id === z.picked) cls = " wrong"; }
+    return `<button class="opt${cls}" type="button" data-opt="${id}"${z.picked ? " disabled" : ""}>${pillIcon(o)}${o.ad}</button>`;
+  }).join("");
+  let fb = "";
+  if (z.picked) {
+    const ok = z.picked === z.answer;
+    fb = `<div class="feedback"><strong>${ok ? "Doğru!" : "Bu sefer olmadı."}</strong>
+      <p style="margin:6px 0 0">${ok ? "" : `Doğru yanıt <b>${d.ad}</b>. `}${d.inci[0]}</p>
+      <div class="row-btns"><button class="btn primary" type="button" id="qNext">Sonraki soru</button>
+      <button class="btn" type="button" id="qStudy">${d.ad} profilini incele</button></div></div>`;
+  }
+  const sc = S.score;
+  detailEl.innerHTML = `
+    <div class="navbar"><span class="crumbs">Oyun</span><button class="back" type="button" id="qExit">Oyundan çık</button></div>
+    <div class="eyebrow" style="--c:var(--accent)"><span class="dot"></span>Parmak İzi Oyunu</div>
+    <h2>Bu profil hangi ilaca ait?</h2>
+    <p class="lede">Sahnenin ortasındaki gizemli kapsülün bağlandığı reseptörlere bak. Işın rengi etki biçimini, kalınlığı afiniteyi gösterir.</p>
+    <div class="score"><span class="tag">Puan <b>${sc.ok} / ${sc.n}</b></span><span class="tag">Seri <b>${sc.streak}</b></span><span class="tag">En iyi seri <b>${sc.best}</b></span></div>
+    <div class="opts">${opts}</div>
+    ${fb}
+    ${!z.picked ? `<div class="row-btns"><button class="btn" type="button" id="qHint"${z.hint ? " disabled" : ""}>${z.hint ? `İpucu: ${CLS[d.sinif].ad} · ${d.grup}` : "İpucu göster"}</button></div>` : ""}
+    <div class="sec"><h3>Gizemli parmak izi</h3><p class="cap">${d.links.length} hedef, afinite sırasına göre.</p><ul class="fp">${rows}</ul></div>`;
+}
+
+function answer(id) {
+  const z = S.quiz; if (!z || z.picked) return;
+  z.picked = id;
+  const sc = S.score; sc.n++;
+  if (id === z.answer) { sc.ok++; sc.streak++; sc.best = Math.max(sc.best, sc.streak); } else sc.streak = 0;
+  renderQuiz();
+  if (G) G.reveal(z.answer);
+}
+
+/* =====================================================================
+   SEÇİM / GEZİNME
+   ===================================================================== */
+
+function select(k, id, opts) {
+  opts = opts || {};
+  if (S.quiz) { S.quiz = null; $("#quizBtn").textContent = "Parmak İzi Oyunu"; }
+  if (S.sel.k === k && S.sel.id === id) { applySelection(); return; }
+  if (!opts.noHist) S.hist.push(S.sel);
+  if (S.hist.length > 40) S.hist.shift();
+  S.sel = { k, id };
+  if (k === "drug" && S.cmp === id) S.cmp = null;
+  applySelection();
+  if (opts.scroll && window.innerWidth <= 980) detailEl.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+}
+
+function applySelection() {
+  renderDetail();
+  renderList();
+  if (G) G.update();
+}
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("button, [data-drug], [data-rec]");
+  if (!t) return;
+  if (t.id === "backBtn") { const p = S.hist.pop(); if (p) select(p.k, p.id, { noHist: true }); return; }
+  if (t.id === "cmpClear") { S.cmp = null; applySelection(); return; }
+  if (t.id === "qNext") { newQuestion(); return; }
+  if (t.id === "qExit") { S.quiz = null; $("#quizBtn").textContent = "Parmak İzi Oyunu"; applySelection(); return; }
+  if (t.id === "qStudy") { const a = S.quiz.answer; S.quiz = null; $("#quizBtn").textContent = "Parmak İzi Oyunu"; S.hist.push(S.sel); S.sel = { k: "drug", id: a }; applySelection(); return; }
+  if (t.id === "qHint") { S.quiz.hint = true; renderQuiz(); return; }
+  if (t.dataset.opt) { answer(t.dataset.opt); return; }
+  if (t.dataset.filter) { S.filter = t.dataset.filter; renderFilters(); renderList(); return; }
+  const inList = !!t.closest("#list");
+  if (t.dataset.drug) { select("drug", t.dataset.drug, { scroll: inList }); return; }
+  if (t.dataset.rec) { select("rec", t.dataset.rec, { scroll: inList }); return; }
+});
+detailEl.addEventListener("change", e => {
+  if (e.target.id === "cmpSel") { S.cmp = e.target.value || null; applySelection(); }
+});
+$("#tabDrug").addEventListener("click", () => setTab("drug"));
+$("#tabRec").addEventListener("click", () => setTab("rec"));
+$("#search").addEventListener("input", e => { S.q = e.target.value; renderList(); });
+$("#quizBtn").addEventListener("click", () => {
+  if (S.quiz) { S.quiz = null; $("#quizBtn").textContent = "Parmak İzi Oyunu"; applySelection(); return; }
+  $("#quizBtn").textContent = "Oyundan çık";
+  newQuestion();
+  if (window.innerWidth <= 980) $("#stage").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+});
+const infoEl = $("#info");
+$("#infoBtn").addEventListener("click", () => { infoEl.hidden = false; $("#infoClose").focus(); });
+$("#infoClose").addEventListener("click", () => { infoEl.hidden = true; $("#infoBtn").focus(); });
+infoEl.addEventListener("click", e => { if (e.target === infoEl) infoEl.hidden = true; });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !infoEl.hidden) { infoEl.hidden = true; $("#infoBtn").focus(); } });
+
+$("#legend").innerHTML = ["a", "p", "g", "i", "b"].map(k => `<span style="--c:${ACT[k].c}"><i></i>${ACT_SHORT[k]}</span>`).join("") + `<span>Kalınlık = afinite</span>`;
+
+/* =====================================================================
+   3B SAHNE
+   ===================================================================== */
+
+let G = null;
+
+/* Hafif yörünge kontrolü: fareyle sürükle ve tekerlek; dokunmatikte yatay sürükleme döndürür,
+   dikey kaydırma sayfayı kaydırır, iki parmak yakınlaştırır. */
+function makeOrbit(camera, el) {
+  const target = new THREE.Vector3(0, 0, 0);
+  const sph = new THREE.Spherical();
+  const st = { th: 0, ph: 1.0, r: 25, vT: 0, vP: 0, goal: null };
+  const api = { autoRotate: true, onStart: null, minR: 7, maxR: 70 };
+  const ptrs = {};
+  let pinchD = 0, pinchR = 0;
+  const count = () => Object.keys(ptrs).length;
+  const pts = () => Object.keys(ptrs).map(k => ptrs[k]);
+  const clampR = r => Math.min(api.maxR, Math.max(api.minR, r));
+
+  el.addEventListener("pointerdown", e => {
+    ptrs[e.pointerId] = { x: e.clientX, y: e.clientY, t: e.pointerType };
+    st.goal = null;
+    if (count() === 2) { const p = pts(); pinchD = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y) || 1; pinchR = st.r; }
+    if (api.onStart) api.onStart();
+  });
+  el.addEventListener("pointermove", e => {
+    const p = ptrs[e.pointerId];
+    if (!p) return;
+    const dx = e.clientX - p.x, dy = e.clientY - p.y;
+    p.x = e.clientX; p.y = e.clientY;
+    if (count() === 1) {
+      st.vT = -dx * 0.007;
+      st.vP = p.t === "touch" ? 0 : -dy * 0.007;
+      st.th += st.vT; st.ph += st.vP;
+    } else if (count() === 2) {
+      const q = pts();
+      const d = Math.hypot(q[0].x - q[1].x, q[0].y - q[1].y) || 1;
+      st.r = clampR(pinchR * pinchD / d);
+    }
+  });
+  const up = e => { delete ptrs[e.pointerId]; };
+  el.addEventListener("pointerup", up);
+  el.addEventListener("pointercancel", up);
+  el.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") up(e); });
+  el.addEventListener("wheel", e => {
+    e.preventDefault();
+    st.goal = null;
+    st.r = clampR(st.r * Math.exp(e.deltaY * 0.0012));
+    if (api.onStart) api.onStart();
+  }, { passive: false });
+  // Safari'nin sayfa yakınlaştırma hareketini sahnede engelle; iki parmak sahneyi yakınlaştırsın
+  el.addEventListener("gesturestart", e => e.preventDefault());
+  el.addEventListener("gesturechange", e => e.preventDefault());
+
+  function fromVec(v) { sph.setFromVector3(v.clone().sub(target)); return { th: sph.theta, ph: sph.phi, r: sph.radius }; }
+  api.jumpTo = v => { const g = fromVec(v); st.th = g.th; st.ph = g.ph; st.r = clampR(g.r); st.goal = null; };
+  api.goTo = v => {
+    const g = fromVec(v);
+    while (g.th - st.th > Math.PI) g.th -= Math.PI * 2;
+    while (g.th - st.th < -Math.PI) g.th += Math.PI * 2;
+    g.r = clampR(g.r); st.goal = g; st.vT = st.vP = 0;
+  };
+  api.zoom = f => { st.goal = { th: st.th, ph: st.ph, r: clampR(st.r * f) }; };
+  api.update = dt => {
+    const dragging = count() > 0;
+    if (st.goal) {
+      const k = 1 - Math.pow(0.002, dt);
+      st.th += (st.goal.th - st.th) * k; st.ph += (st.goal.ph - st.ph) * k; st.r += (st.goal.r - st.r) * k;
+      if (Math.abs(st.goal.r - st.r) < 0.02 && Math.abs(st.goal.th - st.th) < 0.002 && Math.abs(st.goal.ph - st.ph) < 0.002) st.goal = null;
+    } else if (!dragging) {
+      st.th += st.vT; st.ph += st.vP;
+      st.vT *= 0.9; st.vP *= 0.9;
+      if (Math.abs(st.vT) < 1e-4) st.vT = 0;
+      if (Math.abs(st.vP) < 1e-4) st.vP = 0;
+    }
+    if (api.autoRotate && !dragging) st.th += dt * 0.08;
+    st.ph = Math.min(1.45, Math.max(0.2, st.ph));
+    sph.set(st.r, st.ph, st.th);
+    camera.position.setFromSpherical(sph).add(target);
+    camera.lookAt(target);
+  };
+  return api;
+}
+
+/* three.js birkaç kaynaktan sırayla denenir; biri engellenirse (içerik engelleyici, ağ) diğerine geçilir. */
+const THREE_SRC = [/*THREE_SRC*/
+  "vendor/three.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.147.0/three.min.js",
+  "https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js",
+  "https://unpkg.com/three@0.147.0/build/three.min.js"
+];
+function loadThree(i, done) {
+  if (typeof THREE !== "undefined") { done(true); return; }
+  if (i >= THREE_SRC.length) { done(false); return; }
+  const s = document.createElement("script");
+  let settled = false;
+  const next = () => {
+    if (settled) return;
+    settled = true; clearTimeout(timer);
+    if (typeof THREE !== "undefined") done(true); else loadThree(i + 1, done);
+  };
+  const timer = setTimeout(next, 9000);
+  s.onload = next; s.onerror = next;
+  s.src = THREE_SRC[i];
+  (document.head || document.documentElement).appendChild(s);
+}
+function showMsg(text, retry) {
+  const m = $("#glMsg");
+  m.innerHTML = `<div><p>${text}</p>${retry ? `<button class="btn" type="button" id="glRetry">Tekrar dene</button>` : ""}</div>`;
+  m.hidden = false;
+}
+function hideMsg() { $("#glMsg").hidden = true; }
+
+let glStarting = false;
+function startGL() {
+  if (G || glStarting) return;
+  glStarting = true;
+  showMsg("3B sahne yükleniyor…");
+  loadThree(0, ok => {
+    glStarting = false;
+    if (!ok) {
+      showMsg("3B kütüphanesi yüklenemedi. İnternet bağlantınızı ya da içerik engelleyici ayarlarınızı kontrol edin. Listeler ve ayrıntı paneli çalışmaya devam ediyor.", true);
+      return;
+    }
+    try {
+      G = initGL();
+      hideMsg();
+      G.update();
+    } catch (err) {
+      showMsg("3B görünüm bu tarayıcıda başlatılamadı (WebGL gerekli). Listeler ve ayrıntı paneli çalışmaya devam ediyor.");
+      $("#legend").hidden = true;
+    }
+  });
+}
+document.addEventListener("click", e => { if (e.target && e.target.id === "glRetry") startGL(); });
+
+function initGL() {
+  if (typeof THREE === "undefined") throw new Error("three.js yüklenemedi");
+  const stage = $("#stage");
+  const labelsEl = $("#labels");
+  const tip = $("#tip");
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "default" });
+  renderer.domElement.addEventListener("webglcontextlost", e => { e.preventDefault(); showMsg("3B görünüm duraklatıldı. Sayfaya geri dönünce kendiliğinden yeniden başlar."); }, false);
+  renderer.domElement.addEventListener("webglcontextrestored", () => hideMsg(), false);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(0x070a12, 1);
+  stage.insertBefore(renderer.domElement, stage.firstChild);
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x070a12, 0.022);
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200);
+  const HOME = new THREE.Vector3(0, 10.5, 19.5);
+  camera.position.copy(HOME);
+
+  const controls = makeOrbit(camera, renderer.domElement);
+  controls.autoRotate = !reduceMotion;
+  $("#rotBtn").setAttribute("aria-pressed", controls.autoRotate);
+
+  scene.add(new THREE.AmbientLight(0xbfd0ff, 0.55));
+  const key = new THREE.DirectionalLight(0xffffff, 0.9); key.position.set(6, 12, 8); scene.add(key);
+  const core = new THREE.PointLight(0x9be7ff, 1.2, 30); core.position.set(0, 1, 0); scene.add(core);
+
+  // Parıltı dokusu
+  const gc = document.createElement("canvas"); gc.width = gc.height = 64;
+  const gx = gc.getContext("2d");
+  const grad = gx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  grad.addColorStop(0, "rgba(255,255,255,1)"); grad.addColorStop(0.25, "rgba(255,255,255,.55)"); grad.addColorStop(1, "rgba(255,255,255,0)");
+  gx.fillStyle = grad; gx.fillRect(0, 0, 64, 64);
+  const glowTex = new THREE.CanvasTexture(gc);
+
+  // Hücre zarı halkası
+  const R = 10.5;
+  const memMat = new THREE.MeshBasicMaterial({ color: 0x2a3a66, transparent: true, opacity: 0.06, side: THREE.DoubleSide, depthWrite: false });
+  const mem = new THREE.Mesh(new THREE.CylinderGeometry(R, R, 1.1, 128, 1, true), memMat); scene.add(mem);
+  [0.55, -0.55].forEach(y => {
+    const t = new THREE.Mesh(new THREE.TorusGeometry(R, 0.03, 6, 160), new THREE.MeshBasicMaterial({ color: 0x3b4f85, transparent: true, opacity: 0.55 }));
+    t.rotation.x = Math.PI / 2; t.position.y = y; scene.add(t);
+  });
+  // Fosfolipit başları: halkaların üzerinde ince noktalar
+  {
+    const n = 420, pos = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) {
+      const a = (i / (n / 2)) * Math.PI * 2, y = i % 2 ? 0.55 : -0.55;
+      pos[i * 3] = Math.cos(a) * R; pos[i * 3 + 1] = y; pos[i * 3 + 2] = Math.sin(a) * R;
+    }
+    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    scene.add(new THREE.Points(g, new THREE.PointsMaterial({ color: 0x5b72b0, size: 0.09, transparent: true, opacity: 0.7, depthWrite: false })));
+  }
+  // Ortam tozu (veziküller)
+  const dust = (() => {
+    const n = 500, pos = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) {
+      const r = 3 + Math.random() * 26, a = Math.random() * Math.PI * 2, y = (Math.random() - 0.5) * 18;
+      pos[i * 3] = Math.cos(a) * r; pos[i * 3 + 1] = y; pos[i * 3 + 2] = Math.sin(a) * r;
+    }
+    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    const p = new THREE.Points(g, new THREE.PointsMaterial({ map: glowTex, color: 0x6d83c4, size: 0.18, transparent: true, opacity: 0.45, depthWrite: false, blending: THREE.AdditiveBlending }));
+    scene.add(p); return p;
+  })();
+
+  const hits = [];
+  const nodes = [];
+  const nodeById = {};
+
+  function addLabel(text, cls) {
+    const el = document.createElement("div");
+    el.className = "lbl " + cls; el.textContent = text;
+    labelsEl.appendChild(el); return el;
+  }
+
+  // ---- Reseptörler: halka üzerinde ailelere göre gruplanmış
+  const famKeys = Object.keys(FAM);
+  const slots = REC.length + famKeys.length;
+  let slot = 0;
+  const famAngles = {};
+  famKeys.forEach(fk => {
+    const rs = REC.filter(r => r.fam === fk);
+    const start = slot;
+    rs.forEach(r => {
+      const a = (slot / slots) * Math.PI * 2 - Math.PI / 2;
+      r._a = a; slot++;
+    });
+    famAngles[fk] = ((start + (slot - 1)) / 2 / slots) * Math.PI * 2 - Math.PI / 2;
+    slot++;
+  });
+
+  REC.forEach(r => {
+    const col = new THREE.Color(FAM[r.fam].c);
+    const g = new THREE.Group();
+    const mat = new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: 0.35, roughness: 0.45, metalness: 0.1, transparent: true });
+    let n, rad, geo;
+    if (r.tip === "gpcr") { n = 7; rad = 0.34; geo = new THREE.CylinderGeometry(0.11, 0.11, 1.05, 10); }
+    else if (r.tip === "tra") { n = 12; rad = 0.47; geo = new THREE.CylinderGeometry(0.075, 0.075, 1.05, 8); }
+    else { n = 4; rad = 0.27; geo = new THREE.BoxGeometry(0.28, 1.05, 0.28); }
+    const body = new THREE.Group();
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2;
+      const m = new THREE.Mesh(geo, mat);
+      m.position.set(Math.cos(a) * rad, (i % 2 ? 0.07 : -0.07), Math.sin(a) * rad);
+      if (r.tip !== "kanal") { m.rotation.z = (i % 2 ? 0.16 : -0.16); m.rotation.x = (i % 3 - 1) * 0.08; }
+      else m.rotation.y = a;
+      body.add(m);
+    }
+    g.add(body);
+    const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: col, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0.3 }));
+    halo.scale.set(2.8, 2.8, 1); g.add(halo);
+    const hit = new THREE.Mesh(new THREE.SphereGeometry(0.85, 8, 8), new THREE.MeshBasicMaterial({ visible: false }));
+    hit.userData = { k: "rec", id: r.id }; g.add(hit); hits.push(hit);
+    g.position.set(Math.cos(r._a) * R, 0, Math.sin(r._a) * R);
+    scene.add(g);
+    const node = { k: "rec", id: r.id, group: g, body, mat, halo, pos: g.position.clone(), phase: Math.random() * 6,
+      cur: { s: 1, o: 1, h: 0.3 }, tgt: { s: 1, o: 1, h: 0.3, e: 0.35 },
+      lbl: addLabel(r.ad, "rec"), lblY: 1.0, lblCls: "rec" };
+    nodes.push(node); nodeById["rec:" + r.id] = node;
+  });
+
+  const famLabels = famKeys.map(fk => {
+    const el = addLabel(FAM[fk].ad, "fam");
+    el.style.color = FAM[fk].c;
+    const a = famAngles[fk];
+    return { el, pos: new THREE.Vector3(Math.cos(a) * (R + 2.1), -0.2, Math.sin(a) * (R + 2.1)) };
+  });
+
+  // ---- İlaçlar: iki renkli kapsüller, iç halkalarda
+  const capGeo = new THREE.CapsuleGeometry(0.2, 0.46, 6, 14);
+  function capsuleGeo(clsColor) {
+    const g = capGeo.clone();
+    const p = g.attributes.position, cols = new Float32Array(p.count * 3);
+    const w = new THREE.Color(0xf1f5f9), c = new THREE.Color(clsColor);
+    for (let i = 0; i < p.count; i++) { const cc = p.getY(i) > 0 ? w : c; cols[i * 3] = cc.r; cols[i * 3 + 1] = cc.g; cols[i * 3 + 2] = cc.b; }
+    g.setAttribute("color", new THREE.BufferAttribute(cols, 3));
+    return g;
+  }
+  const geoByCls = { tipik: capsuleGeo(CLS.tipik.c), atipik: capsuleGeo(CLS.atipik.c), yeni: capsuleGeo(CLS.yeni.c) };
+
+  function makeDrugNode(d, pos) {
+    const g = new THREE.Group();
+    const col = new THREE.Color(CLS[d ? d.sinif : "yeni"].c);
+    const mat = new THREE.MeshStandardMaterial({ vertexColors: true, emissive: col, emissiveIntensity: 0.25, roughness: 0.3, metalness: 0.05, transparent: true });
+    const body = new THREE.Group();
+    const pill = new THREE.Mesh(d ? geoByCls[d.sinif] : capsuleGeo("#9be7ff"), mat);
+    pill.rotation.z = 0.7;
+    body.add(pill); g.add(body);
+    const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: col, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0.22 }));
+    halo.scale.set(1.6, 1.6, 1); g.add(halo);
+    g.position.copy(pos); scene.add(g);
+    return { g, body, mat, halo };
+  }
+
+  const tip1 = DRUGS.filter(d => d.sinif === "tipik");
+  const atip = DRUGS.filter(d => d.sinif !== "tipik");
+  function placeRing(arr, rad, y, off) {
+    arr.forEach((d, i) => {
+      const a = (i / arr.length) * Math.PI * 2 + off;
+      const pos = new THREE.Vector3(Math.cos(a) * rad, y, Math.sin(a) * rad);
+      const m = makeDrugNode(d, pos);
+      const hit = new THREE.Mesh(new THREE.SphereGeometry(0.55, 8, 8), new THREE.MeshBasicMaterial({ visible: false }));
+      hit.userData = { k: "drug", id: d.id }; m.g.add(hit); hits.push(hit);
+      const node = { k: "drug", id: d.id, group: m.g, body: m.body, mat: m.mat, halo: m.halo, pos: pos.clone(), phase: Math.random() * 6,
+        cur: { s: 1, o: 1, h: 0.22 }, tgt: { s: 1, o: 1, h: 0.22, e: 0.25 },
+        lbl: addLabel(d.ad, "drug"), lblY: -0.62, lblCls: "drug" };
+      nodes.push(node); nodeById["drug:" + d.id] = node;
+    });
+  }
+  placeRing(tip1, 3.6, 1.9, 0.2);
+  placeRing(atip, 5.6, -1.5, 0);
+
+  // Oyun için gizemli kapsül
+  const mysteryPos = new THREE.Vector3(0, 0.3, 0);
+  const myst = makeDrugNode(null, mysteryPos);
+  myst.g.scale.setScalar(2.2);
+  myst.g.visible = false;
+  const mystLbl = addLabel("?", "mystery");
+  mystLbl.style.display = "none";
+
+  // Seçim halkası
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.025, 8, 64), new THREE.MeshBasicMaterial({ color: 0x9be7ff, transparent: true, opacity: 0.9 }));
+  ring.rotation.x = Math.PI / 2; scene.add(ring);
+  const ring2 = new THREE.Mesh(new THREE.TorusGeometry(0.75, 0.018, 8, 64), new THREE.MeshBasicMaterial({ color: 0x9be7ff, transparent: true, opacity: 0.6, depthWrite: false }));
+  ring2.rotation.x = Math.PI / 2; scene.add(ring2);
+  let ringTarget = null, ring2Target = null;
+
+  // ---- Işınlar
+  let beams = [];
+  function clearBeams() {
+    beams.forEach(b => {
+      scene.remove(b.mesh); b.mesh.geometry.dispose(); b.mesh.material.dispose();
+      scene.remove(b.pts); b.pts.geometry.dispose(); b.pts.material.dispose();
+    });
+    beams = [];
+  }
+  function addBeam(from, to, lv, m, secondary) {
+    const mid = from.clone().add(to).multiplyScalar(0.5);
+    mid.y += 1.4 + from.distanceTo(to) * 0.14;
+    const curve = new THREE.QuadraticBezierCurve3(from.clone(), mid, to.clone());
+    const geo = new THREE.TubeGeometry(curve, 56, (secondary ? 0.008 : 0.012) + lv * 0.013, 6, false);
+    const col = new THREE.Color(ACT[m].c);
+    const mat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: secondary ? 0.1 + lv * 0.05 : 0.2 + lv * 0.12, blending: THREE.AdditiveBlending, depthWrite: false });
+    const mesh = new THREE.Mesh(geo, mat); scene.add(mesh);
+    const n = secondary ? lv * 2 : 2 + lv * 3;
+    const pg = new THREE.BufferGeometry(); pg.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+    const pm = new THREE.PointsMaterial({ map: glowTex, color: col, size: secondary ? 0.22 : 0.26 + lv * 0.05, transparent: true, opacity: secondary ? 0.5 : 0.95, blending: THREE.AdditiveBlending, depthWrite: false });
+    const pts = new THREE.Points(pg, pm); scene.add(pts);
+    const offs = []; for (let k = 0; k < n; k++) offs.push(k / n + Math.random() * 0.04);
+    beams.push({ mesh, pts, curve, n, offs, speed: 0.1 + lv * 0.05, grow: reduceMotion ? 1 : 0, total: geo.index.count });
+  }
+
+  // ---- Durumu sahneye uygula
+  function update() {
+    clearBeams();
+    ringTarget = null; ring2Target = null;
+    const quiz = S.quiz;
+    myst.g.visible = !!quiz;
+    mystLbl.style.display = quiz ? "" : "none";
+
+    if (quiz) {
+      const d = DRUG_BY[quiz.answer];
+      const revealed = !!quiz.picked;
+      nodes.forEach(n => {
+        if (n.k === "drug") {
+          const isAns = revealed && n.id === d.id;
+          n.tgt = { s: isAns ? 1.6 : 0.8, o: isAns ? 1 : 0.14, h: isAns ? 0.6 : 0.05, e: isAns ? 0.7 : 0.1 };
+          n.lblCls = "drug " + (isAns ? "sel" : "dim");
+          n.hideLbl = !isAns;
+        } else {
+          const lv = d.r[n.id] ? +d.r[n.id][0] : 0;
+          n.tgt = lv ? { s: 0.8 + lv * 0.17, o: 1, h: 0.18 + lv * 0.14, e: 0.35 + lv * 0.12 } : { s: 0.7, o: 0.2, h: 0.04, e: 0.1 };
+          n.lblCls = "rec " + (lv ? "on" : "dim"); n.hideLbl = false;
+        }
+      });
+      const from = revealed ? nodeById["drug:" + d.id].pos : mysteryPos;
+      d.links.forEach(l => addBeam(from, nodeById["rec:" + l.rid].pos, l.lv, l.m, false));
+      if (revealed) ringTarget = nodeById["drug:" + d.id];
+    } else if (S.sel.k === "drug") {
+      const d = DRUG_BY[S.sel.id];
+      const c = S.cmp && S.cmp !== d.id ? DRUG_BY[S.cmp] : null;
+      nodes.forEach(n => {
+        n.hideLbl = false;
+        if (n.k === "drug") {
+          const isSel = n.id === d.id, isC = c && n.id === c.id;
+          n.tgt = isSel ? { s: 1.7, o: 1, h: 0.7, e: 0.8 } : isC ? { s: 1.35, o: 1, h: 0.45, e: 0.5 } : { s: 0.9, o: 0.35, h: 0.08, e: 0.15 };
+          n.lblCls = "drug " + (isSel ? "sel" : isC ? "on" : "dim");
+        } else {
+          const lv = Math.max(d.r[n.id] ? +d.r[n.id][0] : 0, c && c.r[n.id] ? +c.r[n.id][0] : 0);
+          n.tgt = lv ? { s: 0.8 + lv * 0.17, o: 1, h: 0.18 + lv * 0.14, e: 0.35 + lv * 0.12 } : { s: 0.7, o: 0.2, h: 0.04, e: 0.1 };
+          n.lblCls = "rec " + (lv ? "on" : "dim");
+        }
+      });
+      const dn = nodeById["drug:" + d.id];
+      d.links.forEach(l => addBeam(dn.pos, nodeById["rec:" + l.rid].pos, l.lv, l.m, false));
+      if (c) {
+        const cn = nodeById["drug:" + c.id];
+        c.links.forEach(l => addBeam(cn.pos, nodeById["rec:" + l.rid].pos, l.lv, l.m, true));
+        ring2Target = cn;
+      }
+      ringTarget = dn;
+    } else {
+      const r = REC_BY[S.sel.id];
+      const rn = nodeById["rec:" + r.id];
+      nodes.forEach(n => {
+        n.hideLbl = false;
+        if (n.k === "rec") {
+          const isSel = n.id === r.id;
+          n.tgt = isSel ? { s: 1.6, o: 1, h: 0.85, e: 0.9 } : { s: 0.8, o: 0.3, h: 0.06, e: 0.15 };
+          n.lblCls = "rec " + (isSel ? "sel" : "dim");
+        } else {
+          const lv = r.links.find(l => l.did === n.id);
+          n.tgt = lv ? { s: 0.85 + lv.lv * 0.2, o: 1, h: 0.15 + lv.lv * 0.12, e: 0.3 + lv.lv * 0.12 } : { s: 0.8, o: 0.18, h: 0.03, e: 0.1 };
+          n.lblCls = "drug " + (lv ? "on" : "dim");
+        }
+      });
+      r.links.forEach(l => addBeam(nodeById["drug:" + l.did].pos, rn.pos, l.lv, l.m, false));
+      ringTarget = rn;
+    }
+    nodes.forEach(n => { n.lbl.className = "lbl " + n.lblCls; n.lbl.style.display = n.hideLbl ? "none" : ""; });
+  }
+
+  function reveal() { update(); }
+
+  // ---- Fare / dokunma
+  const ray = new THREE.Raycaster();
+  const ndc = new THREE.Vector2();
+  let hovered = null, downAt = null;
+  function pick(ev) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    ndc.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
+    ndc.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
+    ray.setFromCamera(ndc, camera);
+    const hs = ray.intersectObjects(hits, false);
+    for (const h of hs) {
+      const u = h.object.userData;
+      if (S.quiz && u.k === "drug" && !S.quiz.picked) continue;
+      return u;
+    }
+    return null;
+  }
+  function tipHtml(u) {
+    if (u.k === "drug") {
+      const d = DRUG_BY[u.id];
+      let extra = "";
+      if (S.sel.k === "rec" && !S.quiz) {
+        const v = d.r[S.sel.id];
+        extra = v ? `<br>${REC_BY[S.sel.id].ad}: ${ACT[v[1]].ad}, ${LV[+v[0]].toLocaleLowerCase("tr")}` : `<br>${REC_BY[S.sel.id].ad}: anlamlı bağlanma yok`;
+      }
+      return `<b>${d.ad}</b><span>${CLS[d.sinif].ad} · ${d.grup}${extra}</span>`;
+    }
+    const r = REC_BY[u.id];
+    let extra = "";
+    const dId = S.quiz ? S.quiz.answer : (S.sel.k === "drug" ? S.sel.id : null);
+    if (dId) {
+      const v = DRUG_BY[dId].r[r.id];
+      const who = S.quiz && !S.quiz.picked ? "Gizemli ilaç" : DRUG_BY[dId].ad;
+      extra = v ? `<br>${who}: ${ACT[v[1]].ad}, K<sub>i</sub> ${KI[+v[0]]} nM` : `<br>${who}: anlamlı bağlanma yok`;
+    }
+    return `<b style="font-family:var(--f-mono)">${r.ad}</b><span>${FAM[r.fam].ad} · ${r.sinyal}${extra}</span>`;
+  }
+  renderer.domElement.addEventListener("pointermove", ev => {
+    const u = pick(ev);
+    hovered = u;
+    renderer.domElement.style.cursor = u ? "pointer" : "grab";
+    if (u && ev.pointerType !== "touch") {
+      tip.innerHTML = tipHtml(u); tip.hidden = false;
+      const rect = stage.getBoundingClientRect();
+      let x = ev.clientX - rect.left + 14, y = ev.clientY - rect.top + 14;
+      if (x + 260 > rect.width) x = ev.clientX - rect.left - 270;
+      if (y + 80 > rect.height) y = ev.clientY - rect.top - 80;
+      tip.style.left = Math.max(4, x) + "px"; tip.style.top = Math.max(4, y) + "px";
+    } else tip.hidden = true;
+  });
+  renderer.domElement.addEventListener("pointerleave", () => { tip.hidden = true; hovered = null; });
+  renderer.domElement.addEventListener("pointerdown", ev => { downAt = [ev.clientX, ev.clientY]; });
+  renderer.domElement.addEventListener("pointerup", ev => {
+    if (!downAt) return;
+    const moved = Math.hypot(ev.clientX - downAt[0], ev.clientY - downAt[1]);
+    downAt = null;
+    if (moved > 6) return;
+    const u = pick(ev);
+    if (!u) return;
+    if (S.quiz && !S.quiz.picked) return;
+    tip.hidden = true;
+    select(u.k, u.id);
+  });
+  controls.onStart = () => { if (controls.autoRotate) { controls.autoRotate = false; $("#rotBtn").setAttribute("aria-pressed", "false"); } };
+  $("#zoomIn").addEventListener("click", () => controls.zoom(0.8));
+  $("#zoomOut").addEventListener("click", () => controls.zoom(1.25));
+
+  $("#rotBtn").addEventListener("click", () => {
+    controls.autoRotate = !controls.autoRotate;
+    $("#rotBtn").setAttribute("aria-pressed", controls.autoRotate);
+  });
+  $("#resetBtn").addEventListener("click", () => controls.goTo(HOME));
+
+  // ---- Boyut
+  function resize() {
+    const w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    // Halkanın tamamı (aile etiketleri dahil) sahneye sığsın
+    const vHalf = THREE.MathUtils.degToRad(camera.fov / 2);
+    const hHalf = Math.atan(Math.tan(vHalf) * camera.aspect);
+    const need = Math.max(12.4 / Math.tan(hHalf), 8.5 / Math.tan(vHalf)) * 1.02;
+    HOME.set(0, 0.48, 0.88).normalize().multiplyScalar(Math.min(60, Math.max(20, need)));
+    stage.classList.toggle("compact", w < 600);
+  }
+  resize(); controls.jumpTo(HOME);
+  let lastW = stage.clientWidth;
+  function onResize() {
+    resize();
+    // Telefon döndürüldüğünde ya da pencere belirgin biçimde değiştiğinde halkayı yeniden sığdır
+    if (Math.abs(stage.clientWidth - lastW) > 40) { controls.goTo(HOME); lastW = stage.clientWidth; }
+  }
+  if (typeof ResizeObserver !== "undefined") new ResizeObserver(onResize).observe(stage);
+  else window.addEventListener("resize", onResize);
+
+  // ---- Etiketler
+  const v = new THREE.Vector3();
+  function placeLabel(el, pos, dy) {
+    v.copy(pos); v.y += dy; v.project(camera);
+    if (v.z > 1) { el.style.visibility = "hidden"; return; }
+    el.style.visibility = "";
+    const w = stage.clientWidth, h = stage.clientHeight;
+    const x = (v.x * 0.5 + 0.5) * w, y = (-v.y * 0.5 + 0.5) * h;
+    el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -50%)`;
+  }
+
+  // ---- Döngü
+  const clock = new THREE.Clock();
+  const tmp = new THREE.Vector3();
+  function frame() {
+    requestAnimationFrame(frame);
+    if (document.hidden) { clock.getDelta(); return; }
+    const dt = Math.min(clock.getDelta(), 0.05);
+    const t = clock.elapsedTime;
+    const k = reduceMotion ? 1 : 1 - Math.pow(0.001, dt);
+
+    nodes.forEach(n => {
+      n.cur.s += (n.tgt.s - n.cur.s) * k;
+      n.cur.o += (n.tgt.o - n.cur.o) * k;
+      n.cur.h += (n.tgt.h - n.cur.h) * k;
+      const hov = hovered && hovered.k === n.k && hovered.id === n.id;
+      n.group.scale.setScalar(n.cur.s * (hov ? 1.15 : 1));
+      n.mat.opacity = n.cur.o;
+      n.mat.emissiveIntensity = n.tgt.e + (hov ? 0.3 : 0);
+      n.halo.material.opacity = n.cur.h + (hov ? 0.2 : 0);
+      if (!reduceMotion) {
+        if (n.k === "drug") { n.body.rotation.y = t * 0.7 + n.phase; n.group.position.y = n.pos.y + Math.sin(t * 1.3 + n.phase) * 0.06; }
+        else n.body.rotation.y = t * 0.22 + n.phase;
+      }
+    });
+    if (myst.g.visible && !reduceMotion) { myst.body.rotation.y = t * 1.2; myst.g.position.y = mysteryPos.y + Math.sin(t * 2) * 0.12; }
+
+    beams.forEach(b => {
+      if (b.grow < 1) { b.grow = Math.min(1, b.grow + dt * 1.4); b.mesh.geometry.setDrawRange(0, Math.floor(b.total * b.grow / 3) * 3); }
+      const arr = b.pts.geometry.attributes.position.array;
+      for (let i = 0; i < b.n; i++) {
+        let u = reduceMotion ? b.offs[i] % 1 : (b.offs[i] + t * b.speed) % 1;
+        if (u > b.grow) u = 0;
+        b.curve.getPoint(u, tmp);
+        arr[i * 3] = tmp.x; arr[i * 3 + 1] = tmp.y; arr[i * 3 + 2] = tmp.z;
+      }
+      b.pts.geometry.attributes.position.needsUpdate = true;
+    });
+
+    [[ring, ringTarget, 1], [ring2, ring2Target, -1]].forEach(([rg, tg, dir]) => {
+      rg.visible = !!tg;
+      if (tg) {
+        rg.position.copy(tg.group.position);
+        const s = tg.cur.s * (1 + Math.sin(t * 3) * 0.05);
+        rg.scale.setScalar(s);
+        rg.rotation.z = t * 0.8 * dir;
+      }
+    });
+
+    if (!reduceMotion) dust.rotation.y = t * 0.01;
+
+    controls.update(dt);
+    renderer.render(scene, camera);
+
+    nodes.forEach(n => { if (!n.hideLbl) placeLabel(n.lbl, n.group.position, n.lblY * n.cur.s); });
+    famLabels.forEach(f => placeLabel(f.el, f.pos, 0));
+    if (myst.g.visible) placeLabel(mystLbl, myst.g.position, 1.3);
+  }
+  frame();
+
+  return { update, reveal };
+}
+
+/* =====================================================================
+   BAŞLAT
+   ===================================================================== */
+
+(function boot() {
+  const h = (location.hash || "").slice(1).toLocaleLowerCase("tr");
+  if (h && DRUG_BY[h]) S.sel = { k: "drug", id: h };
+  else if (h) { const r = REC.find(x => x.id.toLowerCase() === h); if (r) { S.sel = { k: "rec", id: r.id }; S.tab = "rec"; } }
+  setTab(S.tab);
+  applySelection();
+  startGL();
+})();
+
+})();
+</script>
+</body>
+</html>
